@@ -1,0 +1,21 @@
+.siteWelcome {
+  max-width: 860px;
+  margin: 0 auto 64px;
+  padding: 48px 0;
+  text-align: center;
+}
+.siteWelcome h1 {
+  font: 500 clamp(2.5rem, 5vw, 4.5rem)/1.05 var(--font-display);
+  color: var(--gold);
+  margin: 20px 0;
+}
+.siteWelcome p {
+  color: var(--muted);
+  line-height: 1.8;
+  max-width: 660px;
+  margin: 20px auto;
+}
+.siteWelcome .formActions {
+  justify-content: center;
+  flex-wrap: wrap;
+}

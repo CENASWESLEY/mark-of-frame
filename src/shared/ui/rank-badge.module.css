@@ -1,0 +1,48 @@
+.badge {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  isolation: isolate;
+  min-width: 1.05em;
+  font-family: var(--font-rank);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.12;
+  padding: 0.06em 0.16em 0.14em 0.04em;
+  color: #e4c88b;
+  transform: skewX(-5deg);
+  text-shadow:
+    0 1px 0 #b28b4a,
+    0 2px 0 #8b642e,
+    1px 3px 0 #66471f,
+    1px 4px 0 #3f2b16,
+    2px 7px 9px #000b;
+  letter-spacing: -0.03em;
+}
+.small {
+  font-size: 29px;
+}
+.medium {
+  font-size: 47px;
+}
+.large {
+  font-size: 82px;
+}
+.legendary {
+  color: #ffe7aa;
+  text-shadow:
+    0 1px 0 #d8b568,
+    0 2px 0 #b78a3d,
+    1px 3px 0 #8b6028,
+    1px 5px 0 #54391d,
+    2px 8px 10px #000c,
+    0 0 24px #e5b8564a;
+}
+@media (max-width: 600px) {
+  .large {
+    font-size: 64px;
+  }
+  .medium {
+    font-size: 40px;
+  }
+}

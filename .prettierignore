@@ -1,0 +1,8 @@
+pnpm-lock.yaml
+public/images/
+.next/
+data/
+.verification/
+dist/
+.sites-runtime/
+outputs/

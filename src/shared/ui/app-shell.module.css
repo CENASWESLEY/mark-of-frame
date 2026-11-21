@@ -1,0 +1,178 @@
+.shell {
+  width: 100%;
+  min-height: 100dvh;
+  margin: 0 auto;
+  position: relative;
+  isolation: isolate;
+}
+.shell:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 65% 550px at 50% 950px,
+    #8d65200b,
+    transparent 90%
+  );
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 15px var(--page-padding);
+  min-height: 100px;
+  border-bottom: 1px solid var(--line);
+  background: #0d0d0ef5;
+  position: relative;
+  z-index: 3;
+}
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  white-space: nowrap;
+  line-height: 1;
+}
+.brandName {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-style: italic;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.brandSignature {
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--gold);
+  margin-top: 9px;
+  padding-left: 3px;
+}
+.nav {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  align-self: stretch;
+  flex-wrap: wrap;
+}
+.nav a {
+  display: flex;
+  align-items: center;
+  position: relative;
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+  min-height: 44px;
+}
+.nav a[aria-current="page"] {
+  color: var(--gold);
+}
+.nav a[aria-current="page"]:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -15px;
+  height: 2px;
+  background: var(--gold);
+}
+.actions {
+  display: flex;
+  align-items: center;
+  flex: none;
+}
+.main {
+  padding: 40px var(--page-padding) 0;
+  min-width: 0;
+}
+.homeMain {
+  padding-top: 0;
+}
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 45px var(--page-padding) 30px;
+  color: var(--muted);
+  font-size: 12px;
+  border-top: 1px solid var(--line);
+  margin-top: 45px;
+}
+.footer > span:last-child {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.footerBrand {
+  color: var(--gold);
+  font-size: 12px;
+  letter-spacing: 2.5px;
+}
+@media (max-width: 1150px) {
+  .header {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .nav {
+    width: 100%;
+    order: 3;
+    gap: 27px;
+  }
+  .nav a {
+    padding: 4px 0;
+  }
+  .nav a[aria-current="page"]:after {
+    bottom: -15px;
+  }
+  .brandName {
+    font-size: 30px;
+  }
+}
+@media (max-width: 600px) {
+  .header {
+    padding: 17px var(--page-padding) 12px;
+  }
+  .brandName {
+    font-size: 28px;
+  }
+  .brandSignature {
+    font-size: 8px;
+    letter-spacing: 2.4px;
+  }
+  .actions a {
+    font-size: 12px;
+    padding: 10px 12px;
+  }
+  .nav {
+    gap: 2px 21px;
+    justify-content: center;
+    margin-top: 7px;
+  }
+  .nav a {
+    font-size: 12px;
+    min-height: 37px;
+  }
+  .nav a[aria-current="page"]:after {
+    bottom: 0;
+  }
+  .main {
+    padding-top: 28px;
+  }
+  .homeMain {
+    padding-top: 0;
+  }
+  .footer {
+    justify-content: center;
+    text-align: center;
+    gap: 15px;
+    font-size: 11px;
+    margin-top: 30px;
+  }
+  .footer > span:first-child {
+    width: 100%;
+  }
+}

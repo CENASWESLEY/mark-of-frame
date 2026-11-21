@@ -1,0 +1,64 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { getDatabase } from "@/infrastructure/database/server";
+import {
+  archiveBackupSchema,
+  maximumBackupBytes,
+  type ImportSummary,
+} from "../domain/archive-backup";
+import { mergeBackup } from "./backup-store";
+import { WatchRuleError } from "@/modules/watching/server/watch-store";
+import type { ActionState } from "@/shared/lib/action-state";
+
+export type BackupActionState = ActionState & { summary?: ImportSummary };
+
+export async function importBackupAction(
+  _: BackupActionState,
+  form: FormData,
+): Promise<BackupActionState> {
+  const file = form.get("backup");
+  if (!(file instanceof File) || file.size === 0)
+    return { status: "error", message: "Choose a JSON backup first." };
+  if (file.size > maximumBackupBytes)
+    return {
+      status: "error",
+      message: "The backup is larger than 8 MB. No data was changed.",
+    };
+  let raw: unknown;
+  try {
+    raw = JSON.parse(await file.text());
+  } catch {
+    return {
+      status: "error",
+      message: "This file is not valid JSON. No data was changed.",
+    };
+  }
+  const parsed = archiveBackupSchema.safeParse(raw);
+  if (!parsed.success)
+    return {
+      status: "error",
+      message: `This backup is not compatible: ${parsed.error.issues[0]?.message ?? "invalid records"}. No data was changed.`,
+    };
+  let summary: ImportSummary;
+  try {
+    summary = mergeBackup(getDatabase(), parsed.data);
+  } catch (error) {
+    if (error instanceof WatchRuleError)
+      return {
+        status: "error",
+        message: `${error.message} · Import cancelled; no data was changed.`,
+      };
+    console.error("Backup merge failed", error);
+    return {
+      status: "error",
+      message: "The import could not finish. All changes were rolled back.",
+    };
+  }
+  revalidatePath("/", "layout");
+  return {
+    status: "success",
+    message: `Imported ${summary.titlesAdded} titles and ${summary.roundsAdded} viewings. Existing records were kept.`,
+    summary,
+  };
+}

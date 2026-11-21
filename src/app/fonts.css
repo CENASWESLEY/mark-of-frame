@@ -1,0 +1,62 @@
+/* Self-hosted Google Fonts, SIL Open Font License. */
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/afterframe-0.ttf) format("truetype");
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/afterframe-1.ttf) format("truetype");
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(/fonts/afterframe-2.ttf) format("truetype");
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(/fonts/afterframe-3.ttf) format("truetype");
+}
+@font-face {
+  font-family: "Noto Sans Thai";
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: normal;
+  font-display: swap;
+  src: url(/fonts/afterframe-4.ttf) format("truetype");
+}
+@font-face {
+  font-family: "Noto Sans Thai";
+  font-style: normal;
+  font-weight: 500;
+  font-stretch: normal;
+  font-display: swap;
+  src: url(/fonts/afterframe-5.ttf) format("truetype");
+}
+@font-face {
+  font-family: "Noto Sans Thai";
+  font-style: normal;
+  font-weight: 600;
+  font-stretch: normal;
+  font-display: swap;
+  src: url(/fonts/afterframe-6.ttf) format("truetype");
+}
+
+/* Racing Sans One — rank lettering, SIL OFL. */
+@font-face {
+  font-family: "Racing Sans One";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/rank-0.ttf) format("truetype");
+}

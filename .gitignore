@@ -1,0 +1,16 @@
+node_modules/
+.next/
+out/
+coverage/
+data/
+.env*
+!.env.example
+*.tsbuildinfo
+playwright-report/
+test-results/
+.verification/
+dist/
+.sites-runtime/
+.sites-checkout/
+outputs/
+.wrangler/
