@@ -7,7 +7,7 @@ Approved reference: chat mockup `afterframe.html`, Afterframe Hall of Fame.
 - Cormorant Garamond display typography, Noto Sans Thai reading and controls. Body 16px; regular controls 14px; metadata 12px minimum.
 - Full-width cinematic featured image fades toward the reading area and the surrounding dark canvas. Five poster columns on desktop, two on mobile.
 - Rank, score and personal memory sit together. Keep personal writing more prominent than synopsis.
-- Fine-pointer cover hover reveals a short note; all details remain available by opening the title.
+- Fine-pointer cover hover reveals a short synopsis; all details remain available by opening the title. The Hall preview and collection rows also use the synopsis. Personal feelings and score breakdowns belong in detail history and memories.
 - Change featured artwork with a crossfade; poster transforms are subtle. Use CSS for this, with reduced-motion and pointer gating.
 - Operate surfaces (forms, progress, filters) prioritize speed and clarity. Hall of Fame is the experience surface.
 - Every sample record is labeled. Never turn demonstration counts or notes into claims about the user's history.

@@ -51,10 +51,8 @@ export function TitleRow({
             .filter(Boolean)
             .join(" · ")}
         </p>
-        <p className={styles.note}>
-          {latest?.note ||
-            title.synopsis ||
-            "A story waiting for its first memory."}
+        <p className={styles.synopsis}>
+          {title.synopsis || "Synopsis coming soon."}
         </p>
         <div className={styles.foot}>
           <span>{latest ? statusLabel(latest.status) : "อยากดู"}</span>

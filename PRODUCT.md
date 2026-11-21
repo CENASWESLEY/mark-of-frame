@@ -50,6 +50,7 @@ Local durable SQLite storage, cinematic Hall of Frame, searchable/filterable lib
 - Headings and descriptions are English; personal notes, metadata and existing Thai input labels remain intact.
 - Annual analysis uses actual viewing dates, never release dates. Annual rankings use the final viewing inside the selected year; all-time rankings retain the final viewing overall. Averages and winners stay separate by category. Unknown dates and durations are explicitly excluded from applicable totals.
 - Settings offers full JSON export, validated import preview and atomic merge. Existing identities are never deleted or overwritten. File backups preserve links to artwork, not image binaries.
+- Collection cards, list rows and the featured Hall preview show a short synopsis. Viewing notes, per-season scoring calculations and import provenance remain in the detail history and memories; never use them as preview fallbacks. Missing synopses have an explicit empty state.
 
 ## ChatGPT Sites — confirmed 21 November 2026
 

@@ -173,11 +173,9 @@ export function HallOfFame({ entries }: { entries: ArchiveEntry[] }) {
                 {completedViewings(selected.rounds)} viewings
               </span>
             </div>
-            <blockquote>
-              {latest?.note
-                ? `“${latest.note}”`
-                : "A place in the collection. A memory still waiting to be written."}
-            </blockquote>
+            <p className={styles.synopsis}>
+              {selected.title.synopsis || "Synopsis coming soon."}
+            </p>
             <div className={styles.heroActions}>
               <Link href={`/titles/${selected.title.id}`} className="button">
                 <BookOpen size={16} aria-hidden="true" />

@@ -42,7 +42,7 @@ export function TitleCard({
         )}
         <span className={styles.preview}>
           <span>{title.genres.join(" · ")}</span>
-          <span>{latest?.note || "ยังไม่ได้บันทึกความรู้สึก"}</span>
+          <span>{title.synopsis || "Synopsis coming soon."}</span>
         </span>
       </span>
       <span className={styles.caption}>

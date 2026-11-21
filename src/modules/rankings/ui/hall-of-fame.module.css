@@ -202,7 +202,7 @@
 .rewatch svg {
   fill: #b39adc33;
 }
-.heroContent blockquote {
+.heroContent .synopsis {
   font-size: 14px;
   line-height: 1.9;
   max-width: 680px;
@@ -500,7 +500,7 @@
   .rewatch {
     font-size: 11px;
   }
-  .heroContent blockquote {
+  .heroContent .synopsis {
     font-size: 13px;
     -webkit-line-clamp: 3;
     margin-top: 12px;
