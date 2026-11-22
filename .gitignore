@@ -9,6 +9,7 @@ data/
 playwright-report/
 test-results/
 .verification/
+.impeccable/review/
 dist/
 .sites-runtime/
 .sites-checkout/

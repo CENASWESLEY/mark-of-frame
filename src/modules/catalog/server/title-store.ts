@@ -9,6 +9,7 @@ import {
 } from "@/modules/watching/domain/watch-round";
 import type { ArchiveEntry } from "@/modules/catalog/domain/archive-entry";
 import { transaction } from "@/infrastructure/database/connection";
+import { readInstallments } from "./installment-store";
 
 export class TitleRuleError extends Error {}
 
@@ -42,6 +43,8 @@ const roundRowSchema = z.object({
   note: z.string(),
   created_at: z.string(),
   updated_at: z.string(),
+  installment_id: z.string().nullable(),
+  source_note: z.string(),
 });
 
 function decodeTitle(row: Row): Title {
@@ -70,6 +73,8 @@ export function decodeRound(row: Row): WatchRound {
   return {
     id: round.id,
     titleId: round.title_id,
+    installmentId: round.installment_id,
+    sourceNote: round.source_note,
     status: round.status,
     score: round.score,
     season: round.season,
@@ -83,6 +88,7 @@ export function decodeRound(row: Row): WatchRound {
 }
 
 export function readArchive(database: DatabaseSync): ArchiveEntry[] {
+  const installments = readInstallments(database);
   const grouped = new Map<string, WatchRound[]>();
   for (const row of database
     .prepare("SELECT * FROM watch_rounds ORDER BY created_at DESC, id DESC")
@@ -97,7 +103,11 @@ export function readArchive(database: DatabaseSync): ArchiveEntry[] {
     .all()
     .map((row) => {
       const title = decodeTitle(row);
-      return { title, rounds: grouped.get(title.id) ?? [] };
+      return {
+        title,
+        rounds: grouped.get(title.id) ?? [],
+        installments: installments.filter((part) => part.titleId === title.id),
+      };
     });
 }
 
@@ -109,6 +119,9 @@ export function readTitle(
   if (!row) return null;
   return {
     title: decodeTitle(row),
+    installments: readInstallments(database).filter(
+      (part) => part.titleId === id,
+    ),
     rounds: database
       .prepare(
         "SELECT * FROM watch_rounds WHERE title_id = ? ORDER BY created_at DESC, id DESC",
@@ -168,7 +181,7 @@ export function updateTitle(
       input.totalEpisodes !== null &&
       database
         .prepare(
-          "SELECT id FROM watch_rounds WHERE title_id = ? AND episode > ? LIMIT 1",
+          "SELECT id FROM watch_rounds WHERE title_id = ? AND installment_id IS NULL AND episode > ? LIMIT 1",
         )
         .get(id, input.totalEpisodes)
     )

@@ -1,11 +1,9 @@
 import { z } from "zod";
 import type { ArchiveEntry } from "./archive-entry";
 import { categories } from "./title";
-import {
-  completedViewings,
-  latestRound,
-} from "@/modules/watching/domain/watch-round";
+import { latestRound } from "@/modules/watching/domain/watch-round";
 import { rankForScore } from "@/modules/rankings/domain/score";
+import { entryScore, storyViewings, currentViewing } from "./series";
 
 export const librarySortSchema = z.enum([
   "score",
@@ -59,12 +57,12 @@ export function queryLibrary(
   const search = query.search?.trim().toLocaleLowerCase("th") ?? "";
   const summaries = entries.map((entry) => ({
     entry,
-    latest: latestRound(entry.rounds),
-    viewings: completedViewings(entry.rounds),
+    latest: currentViewing(entry) ?? latestRound(entry.rounds),
+    score: entryScore(entry),
+    viewings: storyViewings(entry),
   }));
-  const filtered = summaries.filter(({ entry, latest, viewings }) => {
+  const filtered = summaries.filter(({ entry, latest, viewings, score }) => {
     const { title } = entry;
-    const score = latest?.score ?? null;
     const searchable = [
       title.name,
       title.originalTitle,
@@ -72,6 +70,7 @@ export function queryLibrary(
       title.country,
       title.language,
       title.releaseYear,
+      ...(entry.installments ?? []).map((part) => part.name),
     ]
       .join(" ")
       .toLocaleLowerCase("th");
@@ -98,7 +97,7 @@ export function queryLibrary(
       return (
         b.entry.title.createdAt.localeCompare(a.entry.title.createdAt) || byName
       );
-    return (b.latest?.score ?? -1) - (a.latest?.score ?? -1) || byName;
+    return (b.score ?? -1) - (a.score ?? -1) || byName;
   });
   return filtered.map(({ entry }) => entry);
 }

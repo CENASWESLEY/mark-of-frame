@@ -15,10 +15,7 @@ import {
   categoryEnglishLabel,
   type Category,
 } from "@/modules/catalog/domain/title";
-import {
-  completedViewings,
-  latestRound,
-} from "@/modules/watching/domain/watch-round";
+import { latestRound } from "@/modules/watching/domain/watch-round";
 import { TitleCard } from "@/modules/catalog/ui/title-card";
 import { TitleRow } from "@/modules/catalog/ui/title-row";
 import { Artwork } from "@/shared/ui/artwork";
@@ -29,12 +26,18 @@ import { rankEntries } from "../domain/rankings";
 import type { ArchiveEntry } from "@/modules/catalog/domain/archive-entry";
 import { formatScore } from "../domain/score";
 import { useFeaturedCarousel } from "./use-featured-carousel";
+import { storyViewings } from "@/modules/catalog/domain/series";
 import styles from "./hall-of-fame.module.css";
 
 export function HallOfFame({ entries }: { entries: ArchiveEntry[] }) {
+  const visibleCategories = categories.filter((item) =>
+    entries.some((entry) => entry.title.category === item.id),
+  );
   const [category, setCategory] = useState<Category>(
     () =>
-      categories.find((item) => rankEntries(entries, item.id).length)?.id ??
+      visibleCategories.find((item) => rankEntries(entries, item.id).length)
+        ?.id ??
+      visibleCategories[0]?.id ??
       "film",
   );
   const [view, setView] = useState<CollectionView>("grid");
@@ -117,7 +120,7 @@ export function HallOfFame({ entries }: { entries: ArchiveEntry[] }) {
           role="group"
           aria-label="Featured category"
         >
-          {categories.map((item) => (
+          {visibleCategories.map((item) => (
             <button
               key={item.id}
               type="button"
@@ -129,16 +132,17 @@ export function HallOfFame({ entries }: { entries: ArchiveEntry[] }) {
           ))}
         </div>
         <div className={styles.podium} aria-label="Top three in this category">
-          {ranked.slice(0, 3).map((entry) => (
+          {ranked.length > 0 && <h3 className={styles.podiumHeading}>TOP 3</h3>}
+          {ranked.slice(0, 3).map((entry, index) => (
             <button
               type="button"
               key={entry.title.id}
               onClick={() => carousel.select(entry.title.id)}
               aria-pressed={entry.title.id === selected?.title.id}
-              aria-label={`Feature number ${entry.position}: ${entry.title.name}`}
+              aria-label={`Feature number ${index + 1}: ${entry.title.name}`}
             >
               <span className={styles.podiumNumber}>
-                {String(entry.position).padStart(2, "0")}
+                {String(index + 1).padStart(2, "0")}
               </span>
               <span className={styles.podiumCover}>
                 <Artwork src={entry.title.coverUrl} title={entry.title.name} />
@@ -170,7 +174,7 @@ export function HallOfFame({ entries }: { entries: ArchiveEntry[] }) {
               </span>
               <span className={styles.rewatch}>
                 <Star size={15} aria-hidden="true" />
-                {completedViewings(selected.rounds)} viewings
+                {storyViewings(selected)} viewings
               </span>
             </div>
             <p className={styles.synopsis}>
@@ -273,7 +277,7 @@ export function HallOfFame({ entries }: { entries: ArchiveEntry[] }) {
           role="group"
           aria-label="Ranking category"
         >
-          {categories.map((item) => (
+          {visibleCategories.map((item) => (
             <button
               key={item.id}
               aria-pressed={category === item.id}
@@ -293,8 +297,6 @@ export function HallOfFame({ entries }: { entries: ArchiveEntry[] }) {
                   key={entry.title.id}
                   entry={entry}
                   position={entry.position}
-                  selected={selected?.title.id === entry.title.id}
-                  onSelect={() => carousel.select(entry.title.id)}
                 />
               ) : (
                 <TitleRow

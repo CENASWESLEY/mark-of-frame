@@ -12,7 +12,22 @@ export function Journal({ entries }: { entries: ArchiveEntry[] }) {
     .flatMap((entry) =>
       entry.rounds
         .filter((round) => round.note)
-        .map((round) => ({ title: entry.title, round })),
+        .map((round) => {
+          const part = entry.installments?.find(
+            (item) => item.id === round.installmentId,
+          );
+          return {
+            title: part
+              ? {
+                  ...entry.title,
+                  name: `${entry.title.name} — ${part.name}`,
+                  coverUrl: part.coverUrl || entry.title.coverUrl,
+                }
+              : entry.title,
+            round,
+            href: `/titles/${entry.title.id}${entry.installments?.length ? `?part=${part?.id ?? "overall"}` : ""}`,
+          };
+        }),
     )
     .sort((a, b) => compareRoundsNewestFirst(a.round, b.round));
   if (!notes.length)
@@ -31,9 +46,9 @@ export function Journal({ entries }: { entries: ArchiveEntry[] }) {
     );
   return (
     <div className={styles.list}>
-      {notes.map(({ title, round }) => (
+      {notes.map(({ title, round, href }) => (
         <article key={round.id} className={styles.entry}>
-          <Link href={`/titles/${title.id}`} className={styles.cover}>
+          <Link href={href} className={styles.cover}>
             <Artwork src={title.coverUrl} title={title.name} />
           </Link>
           <div className={styles.body}>
@@ -42,7 +57,7 @@ export function Journal({ entries }: { entries: ArchiveEntry[] }) {
               {title.isDemo && <span className="sampleLabel">ข้อมูลตัวอย่าง</span>}
             </p>
             <h2>
-              <Link href={`/titles/${title.id}`}>{title.name}</Link>
+              <Link href={href}>{title.name}</Link>
             </h2>
             <p className={styles.note}>{round.note}</p>
           </div>

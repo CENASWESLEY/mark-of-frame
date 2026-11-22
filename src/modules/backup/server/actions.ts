@@ -10,6 +10,36 @@ import {
 import { mergeBackup } from "./backup-store";
 import { WatchRuleError } from "@/modules/watching/server/watch-store";
 import type { ActionState } from "@/shared/lib/action-state";
+import { seriesOrganizationSchema } from "../domain/series-organization";
+import { organizeSeries } from "./backup-store";
+
+export async function organizeSeriesAction(
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const file = form.get("organization");
+  if (!(file instanceof File) || !file.size || file.size > maximumBackupBytes)
+    return {
+      status: "error",
+      message: "Choose an organization JSON smaller than 8 MB.",
+    };
+  try {
+    const plan = seriesOrganizationSchema.parse(JSON.parse(await file.text()));
+    organizeSeries(getDatabase(), plan);
+  } catch (error) {
+    return {
+      status: "error",
+      message:
+        error instanceof Error ? error.message : "No changes were saved.",
+    };
+  }
+  revalidatePath("/", "layout");
+  return {
+    status: "success",
+    message:
+      "Series organized. Original notes are preserved in your JSON source archive.",
+  };
+}
 
 export type BackupActionState = ActionState & { summary?: ImportSummary };
 

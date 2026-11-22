@@ -4,13 +4,13 @@ import type { ArchiveEntry } from "../domain/archive-entry";
 import { categoryEnglishLabel } from "../domain/title";
 import {
   latestRound,
-  completedViewings,
   statusLabel,
 } from "@/modules/watching/domain/watch-round";
 import { rankForScore, formatScore } from "@/modules/rankings/domain/score";
 import { Artwork } from "@/shared/ui/artwork";
 import { RankBadge } from "@/shared/ui/rank-badge";
 import styles from "./title-row.module.css";
+import { entryScore, storyViewings, currentViewing } from "../domain/series";
 export function TitleRow({
   entry,
   position,
@@ -21,9 +21,9 @@ export function TitleRow({
   editable?: boolean;
 }) {
   const { title, rounds } = entry;
-  const latest = latestRound(rounds),
-    score = latest?.score ?? null,
-    count = completedViewings(rounds);
+  const latest = currentViewing(entry) ?? latestRound(rounds),
+    score = entryScore(entry),
+    count = storyViewings(entry);
   return (
     <article className={styles.row}>
       {position !== undefined && (

@@ -7,10 +7,10 @@
   overflow: hidden;
   min-height: 760px;
   margin-inline: calc(-1 * var(--page-padding));
-  padding: 245px var(--page-padding) 88px;
+  padding: 130px var(--page-padding) 88px;
   display: flex;
   flex-direction: column;
-  justify-content: end;
+  justify-content: center;
   align-items: center;
   background: #0a0a0b;
   text-align: center;
@@ -76,51 +76,66 @@
 }
 .podium {
   position: absolute;
-  top: 105px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 50%;
+  left: var(--page-padding);
+  transform: translateY(-50%);
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-  width: min(760px, calc(100% - 2 * var(--page-padding)));
+  width: clamp(200px, 19vw, 280px);
+}
+.podiumHeading {
+  grid-column: 1/-1;
+  text-align: center;
+  color: var(--gold);
+  font-family: var(--font-display);
+  font-size: 28px;
+  letter-spacing: 0.08em;
 }
 .podium button {
+  position: relative;
   display: flex;
-  align-items: center;
-  text-align: left;
-  gap: 11px;
+  flex-direction: column;
+  align-items: stretch;
   min-width: 0;
-  padding: 12px 15px;
-  background: #101010de;
-  border: 1px solid #d0ad6429;
+  padding: 0;
+  background: #101010db;
+  border: 1px solid #d0ad6444;
   border-radius: 3px;
   color: var(--text);
-  transition: background 180ms ease;
+  overflow: hidden;
+  text-align: center;
+}
+.podium button:first-of-type {
+  grid-column: 1/-1;
+  width: calc((100% - 12px) / 2);
+  justify-self: center;
 }
 .podium button[aria-pressed="true"] {
-  border-color: #d0ad6488;
-  background: #19160fe8;
+  border-color: var(--gold);
 }
 .podiumNumber {
+  position: absolute;
+  top: 5px;
+  left: 7px;
+  z-index: 1;
   font-family: var(--font-display);
-  font-size: 25px;
-  color: var(--gold);
-  flex: none;
+  font-size: 28px;
+  color: #ffe1a0;
+  text-shadow: 0 2px 5px #000;
 }
 .podiumCover {
   display: block;
-  width: 34px;
-  height: 48px;
-  flex: none;
+  width: 100%;
+  aspect-ratio: 2/3;
   overflow: hidden;
-  border-radius: 2px;
 }
 .podiumText {
-  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 3px;
+  padding: 7px 5px;
+  min-width: 0;
 }
 .podiumText strong {
   font-size: 12px;
@@ -130,13 +145,13 @@
   text-overflow: ellipsis;
 }
 .podiumText > span {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--gold);
   font-variant-numeric: tabular-nums;
 }
 .heroContent {
   width: 100%;
-  max-width: 1000px;
+  max-width: min(680px, calc(100% - 44vw));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -145,7 +160,7 @@
 }
 .heroContent h2 {
   font-family: var(--font-display);
-  font-size: clamp(48px, 6.5vw, 88px);
+  font-size: clamp(42px, 5vw, 74px);
   line-height: 1.03;
   font-weight: 500;
   letter-spacing: -0.035em;
@@ -231,8 +246,10 @@
 .controls {
   position: absolute;
   bottom: 18px;
-  right: var(--page-padding);
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 9px;
   font-size: 11px;
@@ -341,6 +358,7 @@
 .collection .categories {
   display: flex;
   gap: 24px;
+  justify-content: center;
   flex-wrap: wrap;
   border-bottom: 1px solid var(--line);
   margin: 22px 0 28px;
@@ -408,112 +426,82 @@
   }
 }
 @media (max-width: 1000px) {
+  .hero {
+    min-height: 820px;
+    padding-top: 80px;
+  }
   .heroNavigation {
-    gap: 9px;
+    gap: 8px;
     top: 20px;
   }
-  .heroNavigation button {
-    font-size: 11px;
-    padding: 7px 9px;
-  }
   .podium {
-    top: 120px;
+    width: 190px;
   }
-  .hero {
-    padding-top: 250px;
-    min-height: 760px;
+  .heroContent {
+    max-width: calc(100% - 420px);
+  }
+  .heroContent h2 {
+    font-size: 50px;
+  }
+  .verdict {
+    flex-wrap: wrap;
+    gap: 15px;
   }
   .grid {
     gap: 26px 16px;
   }
-  .heroContent h2 {
-    font-size: 68px;
-  }
 }
-@media (max-width: 600px) {
+@media (max-width: 760px) {
   .hero {
-    min-height: 790px;
-    padding: 260px 20px 80px;
+    min-height: 0;
+    justify-content: center;
+    padding: 85px 20px 80px;
+    gap: 32px;
   }
   .heroNavigation {
     left: 12px;
     right: 12px;
     top: 15px;
-    gap: 3px 6px;
+    gap: 4px;
   }
   .heroNavigation button {
-    font-size: 10px;
-    padding: 7px 8px;
-    min-height: 32px;
+    font-size: 12px;
+    padding: 7px 9px;
   }
   .podium {
-    top: 145px;
-    gap: 6px;
-    width: calc(100% - 28px);
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    width: 190px;
+    gap: 10px;
   }
-  .podium button {
-    padding: 9px 7px;
-    gap: 6px;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-  .podiumNumber {
-    font-size: 20px;
+  .podiumHeading {
+    font-size: 25px;
   }
   .podiumCover {
-    width: 25px;
-    height: 35px;
-  }
-  .podiumText {
-    width: 100%;
-    gap: 2px;
+    aspect-ratio: 2/2.55;
   }
   .podiumText strong {
-    font-size: 10px;
+    font-size: 12px;
   }
-  .podiumText > span {
-    font-size: 10px;
+  .heroContent {
+    max-width: 600px;
   }
   .heroContent h2 {
-    font-size: 51px;
-  }
-  .place {
-    font-size: 11px;
-    margin-bottom: 14px;
-  }
-  .place .sampleLabel {
-    display: none;
-  }
-  .metadata {
-    font-size: 11px;
-    margin-top: 12px;
-  }
-  .verdict {
-    gap: 16px;
-    margin-top: 15px;
-  }
-  .score {
-    font-size: 42px;
-  }
-  .rewatch {
-    font-size: 11px;
+    font-size: clamp(42px, 8vw, 60px);
   }
   .heroContent .synopsis {
-    font-size: 13px;
     -webkit-line-clamp: 3;
-    margin-top: 12px;
+    font-size: 14px;
   }
   .heroActions {
     gap: 12px;
-    margin-top: 20px;
   }
-  .heroActions > span {
-    font-size: 10px;
+  .metadata {
+    font-size: 12px;
   }
   .controls {
-    right: 16px;
     bottom: 15px;
     gap: 5px;
   }
@@ -524,8 +512,8 @@
     font-size: 64px;
   }
   .dedication p {
-    font-size: 12px;
-    max-width: 34ch;
+    font-size: 13px;
+    max-width: 38ch;
   }
   .collection h2 {
     font-size: 30px;
@@ -542,12 +530,14 @@
     font-size: 12px;
   }
   .collection :global(.sectionHeading) {
-    align-items: start;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     flex-wrap: wrap;
   }
   .collection :global(.sectionHeading p) {
-    font-size: 12px;
-    max-width: 45ch;
+    font-size: 13px;
+    max-width: 48ch;
   }
 }
 @media (prefers-reduced-motion: reduce) {

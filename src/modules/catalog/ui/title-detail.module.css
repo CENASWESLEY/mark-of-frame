@@ -5,6 +5,81 @@
   flex-wrap: wrap;
   margin-bottom: 29px;
 }
+.chain {
+  margin-top: 42px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+.chainCards {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  padding: 12px 0 20px;
+  scroll-snap-type: x proximity;
+}
+.chainCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 0 0 190px;
+  min-width: 0;
+  color: var(--text);
+  text-decoration: none;
+  scroll-snap-align: start;
+  transition: opacity 180ms ease;
+}
+.chainCard[aria-current="page"] {
+  opacity: 0.5;
+}
+.chainCard:not([aria-current="page"]):hover {
+  opacity: 1;
+}
+.chainCard strong {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.chainCover {
+  aspect-ratio: 2/3;
+  overflow: hidden;
+  border-radius: 3px;
+}
+.chainBottom {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: 10px;
+}
+.chainCount {
+  flex-basis: 100%;
+  color: var(--purple);
+  font-size: 12px;
+}
+.chainScore {
+  color: var(--gold);
+  font-size: 25px;
+  font-variant-numeric: tabular-nums;
+}
+.chainScore small {
+  font-size: 12px;
+  color: var(--muted);
+}
+.seriesSummary {
+  color: var(--gold);
+  text-align: center;
+  margin-top: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.overallFeeling {
+  max-width: 72ch;
+  margin: 24px auto;
+}
+.overallFeeling p {
+  white-space: pre-wrap;
+  line-height: 1.9;
+  margin-top: 10px;
+}
 .intro {
   display: grid;
   grid-template-columns: minmax(150px, 230px) 1fr;
@@ -39,6 +114,12 @@
 .original {
   color: var(--muted);
   margin-top: 9px;
+}
+.partName {
+  color: var(--gold);
+  font-family: var(--font-display);
+  font-size: 28px;
+  margin-top: 10px;
 }
 .metadata {
   font-size: 13px;

@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { Artwork } from "@/shared/ui/artwork";
-import { latestRound } from "../domain/watch-round";
+import { currentViewing, progressLimit } from "@/modules/catalog/domain/series";
 import { progressAction } from "../server/actions";
 import { initialActionState } from "@/shared/lib/action-state";
 import type { ArchiveEntry } from "@/modules/catalog/domain/archive-entry";
@@ -16,21 +16,22 @@ function ProgressItem({ entry }: { entry: ArchiveEntry }) {
     progressAction,
     initialActionState,
   );
-  const round = latestRound(entry.rounds);
+  const round = currentViewing(entry);
   if (!round) return null;
-  const total = entry.title.totalEpisodes;
+  const total = progressLimit(entry, round.installmentId);
+  const href = `/titles/${entry.title.id}${round.installmentId ? `?part=${round.installmentId}` : ""}`;
   const episodic = isEpisodic(entry.title.category);
   return (
     <article className={styles.item}>
       <Link
-        href={`/titles/${entry.title.id}`}
+        href={href}
         className={styles.cover}
         aria-label={`เปิด ${entry.title.name}`}
       >
         <Artwork src={entry.title.coverUrl} title={entry.title.name} />
       </Link>
       <div className={styles.body}>
-        <Link href={`/titles/${entry.title.id}`}>{entry.title.name}</Link>
+        <Link href={href}>{entry.title.name}</Link>
         <p>
           <span>{episodic ? `ซีซัน ${round.season}` : "กำลังดู"}</span>
           <span>
@@ -77,9 +78,7 @@ function ProgressItem({ entry }: { entry: ArchiveEntry }) {
 }
 
 export function ProgressList({ entries }: { entries: ArchiveEntry[] }) {
-  const watching = entries.filter(
-    (entry) => latestRound(entry.rounds)?.status === "watching",
-  );
+  const watching = entries.filter((entry) => Boolean(currentViewing(entry)));
   if (!watching.length) return null;
   return (
     <section className={styles.section} aria-label="กำลังดู">

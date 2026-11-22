@@ -319,6 +319,8 @@ textarea {
   border-radius: 50%;
 }
 .editorForm {
+  margin-inline: auto;
+  width: 100%;
   max-width: 940px;
 }
 .formGrid {
@@ -386,11 +388,15 @@ textarea[aria-invalid="true"] {
   font-size: 14px;
 }
 .editorSection {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 940px;
   border-top: 1px solid var(--line);
   margin-top: 40px;
   padding-top: 28px;
 }
 .segmentControls {
+  justify-content: center;
   display: flex;
   flex-wrap: wrap;
   gap: 23px;

@@ -28,6 +28,10 @@ const dateInput = z
 export const watchRoundInputSchema = z
   .object({
     titleId: z.string().uuid(),
+    installmentId: z.preprocess(
+      (value) => (value === "" ? null : value),
+      z.string().uuid().nullable().optional(),
+    ),
     status: z.enum(watchStatuses.map((status) => status.id)),
     score: scoreInputSchema,
     season: z.coerce.number().int().min(1).max(1000),
@@ -49,6 +53,7 @@ export type WatchRound = WatchRoundInput & {
   id: string;
   createdAt: string;
   updatedAt: string;
+  sourceNote?: string;
 };
 
 /** Actual viewing dates take precedence, so backfilling an old round is safe. */

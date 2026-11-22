@@ -13,11 +13,17 @@ export function RoundEditor({
   round,
   totalEpisodes,
   episodic,
+  installmentId,
+  season,
+  feelingsOnly,
 }: {
   titleId: string;
   round?: WatchRound;
   totalEpisodes: number | null;
   episodic: boolean;
+  installmentId?: string;
+  season?: number;
+  feelingsOnly?: boolean;
 }) {
   const [state, action, pending] = useActionState(
     saveRoundAction,
@@ -28,7 +34,7 @@ export function RoundEditor({
     score: round?.score != null ? formatScore(round.score) : "",
     startedOn: round?.startedOn ?? "",
     finishedOn: round?.finishedOn ?? "",
-    season: String(round?.season ?? 1),
+    season: String(round?.season ?? season ?? 1),
     episode: String(round?.episode ?? 0),
     note: round?.note ?? "",
   });
@@ -49,6 +55,11 @@ export function RoundEditor({
   return (
     <form action={action} className="editorForm">
       <input type="hidden" name="titleId" value={titleId} />
+      <input
+        type="hidden"
+        name="installmentId"
+        value={installmentId ?? round?.installmentId ?? ""}
+      />
       {round && <input type="hidden" name="roundId" value={round.id} />}
       <div className="formGrid">
         <FormField {...field("status")} label="สถานะรอบนี้">
@@ -60,20 +71,23 @@ export function RoundEditor({
             ))}
           </select>
         </FormField>
-        <FormField
-          {...field("score")}
-          label="คะแนนรอบนี้ / 10"
-          hint="0–10 ทศนิยมได้ 2 ตำแหน่ง · เว้นว่างได้"
-        >
-          <input
-            {...common("score")}
-            id="score"
-            type="text"
-            inputMode="decimal"
-            maxLength={5}
-            placeholder="8.65"
-          />
-        </FormField>
+        {!feelingsOnly && (
+          <FormField
+            {...field("score")}
+            label="คะแนนรอบนี้ / 10"
+            hint="0–10 ทศนิยมได้ 2 ตำแหน่ง · เว้นว่างได้"
+          >
+            <input
+              {...common("score")}
+              id="score"
+              type="text"
+              inputMode="decimal"
+              maxLength={5}
+              placeholder="8.65"
+            />
+          </FormField>
+        )}
+        {feelingsOnly && <input type="hidden" name="score" value="" />}
         <FormField {...field("startedOn")} label="วันที่เริ่มดู">
           <input {...common("startedOn")} id="startedOn" type="date" />
         </FormField>
@@ -86,15 +100,20 @@ export function RoundEditor({
         </FormField>
         {episodic ? (
           <>
-            <FormField {...field("season")} label="ซีซัน">
-              <input
-                {...common("season")}
-                id="season"
-                type="number"
-                min={1}
-                max={1000}
-              />
-            </FormField>
+            {!installmentId && (
+              <FormField {...field("season")} label="ซีซัน">
+                <input
+                  {...common("season")}
+                  id="season"
+                  type="number"
+                  min={1}
+                  max={1000}
+                />
+              </FormField>
+            )}
+            {installmentId && (
+              <input type="hidden" name="season" value={season ?? 1} />
+            )}
             <FormField {...field("episode")} label="ดูถึงตอนที่">
               <input
                 {...common("episode")}

@@ -9,6 +9,52 @@ import {
 import { validationFailure, type ActionState } from "@/shared/lib/action-state";
 import { changeArchive } from "./runtime";
 import { navigate } from "./navigation";
+import { installmentInputSchema } from "@/modules/catalog/domain/installment";
+import { seriesOrganizationSchema } from "@/modules/backup/domain/series-organization";
+
+export async function saveInstallmentAction(
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const parsed = installmentInputSchema.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return validationFailure(parsed.error);
+  const id = form.get("installmentId");
+  if (id && !z.string().uuid().safeParse(id).success)
+    return { status: "error", message: "รหัสภาคไม่ถูกต้อง" };
+  try {
+    await changeArchive((archive) =>
+      archive.saveInstallment(
+        parsed.data,
+        typeof id === "string" && id ? id : undefined,
+      ),
+    );
+    return { status: "success", message: "บันทึกซีซัน/ภาคแล้ว" };
+  } catch (error) {
+    return failure(error);
+  }
+}
+export async function organizeSeriesAction(
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const file = form.get("organization");
+  if (!(file instanceof File) || !file.size || file.size > maximumBackupBytes)
+    return {
+      status: "error",
+      message: "Choose an organization JSON smaller than 8 MB.",
+    };
+  try {
+    const plan = seriesOrganizationSchema.parse(JSON.parse(await file.text()));
+    await changeArchive((archive) => archive.organize(plan));
+    return {
+      status: "success",
+      message:
+        "Series organized. Your original notes remain in the JSON source archive.",
+    };
+  } catch (error) {
+    return failure(error);
+  }
+}
 
 export type BackupActionState = ActionState & { summary?: ImportSummary };
 const failure = (error: unknown): ActionState => ({

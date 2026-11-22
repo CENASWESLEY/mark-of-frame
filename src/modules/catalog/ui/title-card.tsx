@@ -4,12 +4,9 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 import { Artwork } from "@/shared/ui/artwork";
 import { RankBadge } from "@/shared/ui/rank-badge";
-import {
-  completedViewings,
-  latestRound,
-} from "@/modules/watching/domain/watch-round";
 import { formatScore, rankForScore } from "@/modules/rankings/domain/score";
 import type { ArchiveEntry } from "@/modules/catalog/domain/archive-entry";
+import { entryScore, storyViewings } from "../domain/series";
 import styles from "./title-card.module.css";
 
 export function TitleCard({
@@ -23,10 +20,9 @@ export function TitleCard({
   selected?: boolean;
   onSelect?: () => void;
 }) {
-  const { title, rounds } = entry;
-  const latest = latestRound(rounds);
-  const score = latest?.score ?? null;
-  const count = completedViewings(rounds);
+  const { title } = entry;
+  const score = entryScore(entry);
+  const count = storyViewings(entry);
   const content = (
     <>
       <span className={styles.cover}>

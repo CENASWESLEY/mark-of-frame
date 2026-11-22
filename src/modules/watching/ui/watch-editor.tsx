@@ -9,11 +9,17 @@ export function WatchEditor({
   latest,
   totalEpisodes,
   episodic,
+  installmentId,
+  season,
+  feelingsOnly,
 }: {
   titleId: string;
   latest: WatchRound | null;
   totalEpisodes: number | null;
   episodic: boolean;
+  installmentId?: string;
+  season?: number;
+  feelingsOnly?: boolean;
 }) {
   const [mode, setMode] = useState<"new" | "edit">(latest ? "edit" : "new");
   return (
@@ -39,6 +45,9 @@ export function WatchEditor({
       <RoundEditor
         key={`${mode}-${latest?.id ?? "empty"}`}
         titleId={titleId}
+        installmentId={installmentId}
+        season={season}
+        feelingsOnly={feelingsOnly}
         round={mode === "edit" ? (latest ?? undefined) : undefined}
         totalEpisodes={totalEpisodes}
         episodic={episodic}

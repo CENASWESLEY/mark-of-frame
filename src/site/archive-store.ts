@@ -2,7 +2,15 @@ import type { ArchiveEntry } from "@/modules/catalog/domain/archive-entry";
 import type { TitleInput } from "@/modules/catalog/domain/title";
 import { isEpisodic } from "@/modules/catalog/domain/title";
 import {
-  latestRound,
+  installmentInputSchema,
+  type InstallmentInput,
+} from "@/modules/catalog/domain/installment";
+import { progressLimit, currentViewing } from "@/modules/catalog/domain/series";
+import {
+  organizedArchive,
+  type SeriesOrganization,
+} from "@/modules/backup/domain/series-organization";
+import {
   nextEpisode,
   type WatchRoundInput,
 } from "@/modules/watching/domain/watch-round";
@@ -63,7 +71,10 @@ export class BrowserArchive {
       if (existing) {
         if (
           input.totalEpisodes !== null &&
-          existing.rounds.some((round) => round.episode > input.totalEpisodes!)
+          existing.rounds.some(
+            (round) =>
+              !round.installmentId && round.episode > input.totalEpisodes!,
+          )
         )
           throw new Error("จำนวนตอนใหม่น้อยกว่าความคืบหน้าที่บันทึกไว้");
         existing.title = { ...existing.title, ...input };
@@ -84,10 +95,8 @@ export class BrowserArchive {
     this.commit((entries) => {
       const entry = entries.find((entry) => entry.title.id === input.titleId);
       if (!entry) throw new Error("ไม่พบเรื่องที่ต้องการบันทึก");
-      if (
-        entry.title.totalEpisodes !== null &&
-        input.episode > entry.title.totalEpisodes
-      )
+      const limit = progressLimit(entry, input.installmentId);
+      if (limit !== null && input.episode > limit)
         throw new Error("ความคืบหน้าเกินจำนวนตอนทั้งหมด");
       const existing = id
         ? entry.rounds.find((round) => round.id === id)
@@ -107,12 +116,15 @@ export class BrowserArchive {
   incrementProgress(titleId: string): void {
     this.commit((entries) => {
       const entry = entries.find((entry) => entry.title.id === titleId);
-      const round = entry ? latestRound(entry.rounds) : null;
+      const round = entry ? currentViewing(entry) : null;
       if (!entry || !round || round.status !== "watching")
         throw new Error("เริ่มรอบที่กำลังดูก่อนบันทึกความคืบหน้า");
       if (!isEpisodic(entry.title.category))
         throw new Error("บันทึกจำนวนตอนได้เฉพาะรายการแบบตอน");
-      round.episode = nextEpisode(round.episode, entry.title.totalEpisodes);
+      round.episode = nextEpisode(
+        round.episode,
+        progressLimit(entry, round.installmentId),
+      );
       round.updatedAt = new Date().toISOString();
     });
   }
@@ -128,15 +140,23 @@ export class BrowserArchive {
           (entry) => entry.title.id === incoming.title.id,
         );
         if (!entry) {
-          entry = { title: incoming.title, rounds: [] };
+          entry = { title: incoming.title, rounds: [], installments: [] };
           entries.push(entry);
+        }
+        entry.installments ??= [];
+        for (const part of incoming.installments) {
+          if (
+            entries.some((item) =>
+              item.installments?.some((current) => current.id === part.id),
+            )
+          )
+            continue;
+          entry.installments.push(part);
         }
         for (const round of incoming.rounds) {
           if (rounds.has(round.id)) continue;
-          if (
-            entry.title.totalEpisodes !== null &&
-            round.episode > entry.title.totalEpisodes
-          )
+          const limit = progressLimit(entry, round.installmentId);
+          if (limit !== null && round.episode > limit)
             throw new Error(
               "Viewing progress exceeds the existing episode total. No data was changed.",
             );
@@ -147,10 +167,42 @@ export class BrowserArchive {
       return summary;
     });
   }
+  saveInstallment(input: InstallmentInput, id?: string): string {
+    const validated = installmentInputSchema.parse(input);
+    return this.commit((entries) => {
+      const entry = entries.find((item) => item.title.id === validated.titleId);
+      if (!entry) throw new Error("ไม่พบเรื่องนี้");
+      entry.installments ??= [];
+      if (
+        entry.installments.some(
+          (part) => part.position === validated.position && part.id !== id,
+        )
+      )
+        throw new Error("ลำดับภาคนี้มีอยู่แล้ว");
+      const existing = entry.installments.find((part) => part.id === id);
+      if (id && !existing) throw new Error("ไม่พบภาคนี้");
+      if (existing) Object.assign(existing, validated);
+      else
+        entry.installments.push({
+          ...validated,
+          id: id ?? crypto.randomUUID(),
+        });
+      return existing?.id ?? entry.installments.at(-1)!.id;
+    });
+  }
+  organize(plan: SeriesOrganization): void {
+    this.commit((entries) => {
+      const next = organizedArchive(entries, plan);
+      entries.splice(0, entries.length, ...next.entries);
+    });
+  }
 }
 export function inventoryOf(entries: ArchiveEntry[]) {
   return {
     titleIds: entries.map((entry) => entry.title.id),
     roundIds: entries.flatMap((entry) => entry.rounds.map((round) => round.id)),
+    installmentIds: entries.flatMap(
+      (entry) => entry.installments?.map((part) => part.id) ?? [],
+    ),
   };
 }

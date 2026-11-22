@@ -27,3 +27,11 @@ The local app binds to loopback and has no authentication. Local SQLite must not
 `BrowserArchive` stores one versioned JSON backup in localStorage. Mutations clone and validate the entire proposed archive before one atomic storage write; memory updates only after success. Imports preserve existing IDs and reject progress conflicts before committing. Web Locks serialize browser mutations across tabs; storage events reload other tabs. Invalid saved JSON is preserved for recovery, and quota errors leave the prior snapshot intact. JSON exports are compatible across both targets. Private access is enforced by the Sites platform, not custom app authentication. There is no cloud database or automatic synchronization; another device starts empty until the user imports JSON.
 
 `README.md` describes commands, backup, demo content and verification. `PRODUCT.md` separates confirmed requirements from temporary product defaults.
+
+## Installments and series organization
+
+Catalog owns installments nested under an archive entry; watching rounds reference an optional installment identity. SQLite migration 2 adds the installment table and reference/source-note columns without changing previous migrations. The browser and SQLite targets validate ownership and per-part episode limits. Rank remains derived; no current score is persisted on a title or installment.
+
+The pure catalog series domain selects each part's latest round, computes the equal story average and finds current progress without reviving an obsolete unfinished viewing. Annual rankings pass only that year's rounds into the same rules. Different seasons are not rewatches of one another.
+
+Backup version 2 normalizes legacy exports. Ordinary merge preserves existing records. Reviewed series organization has explicit before/after snapshots: identity, title metadata, viewing dates and archived text are protected, and an exact before-state comparison rejects concurrent changes. The browser commits one validated snapshot; SQLite uses one transaction for every affected part and viewing. The original source text stays exportable but is not rendered as personal feelings.

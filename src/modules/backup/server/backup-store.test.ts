@@ -93,7 +93,7 @@ describe("backup validation and roundtrip", () => {
   );
   it("rejects unsupported future versions", () =>
     expect(
-      archiveBackupSchema.safeParse({ ...snapshot(), schemaVersion: 2 })
+      archiveBackupSchema.safeParse({ ...snapshot(), schemaVersion: 3 })
         .success,
     ).toBe(false));
   it("rejects duplicate title identities", () => {

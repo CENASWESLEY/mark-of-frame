@@ -12,6 +12,7 @@ import { importBackupAction, type BackupActionState } from "../server/actions";
 import { FormFeedback } from "@/shared/ui/form-field";
 import { formatDate } from "@/shared/lib/format-date";
 import styles from "./backup-settings.module.css";
+import { SeriesOrganization } from "./series-organization";
 
 export function BackupSettings({
   inventory,
@@ -127,7 +128,7 @@ export function BackupSettings({
           Download backup
         </a>
         <p className={styles.note}>
-          JSON · Version 1 · Full viewing history · Cover links included; image
+          JSON · Version 2 · Full viewing history · Cover links included; image
           files remain at their original locations.
         </p>
       </section>
@@ -234,6 +235,7 @@ export function BackupSettings({
           )}
         </form>
       </section>
+      <SeriesOrganization />
       <section className={styles.privacy}>
         <h2>A personal archive. A local home.</h2>
         <p>

@@ -1,5 +1,5 @@
 import type { Category } from "@/modules/catalog/domain/title";
-import { latestRound } from "@/modules/watching/domain/watch-round";
+import { entryScore } from "@/modules/catalog/domain/series";
 import type { ArchiveEntry } from "@/modules/catalog/domain/archive-entry";
 import { rankForScore, type Rank } from "./score";
 
@@ -16,7 +16,7 @@ export function rankEntries(
   const scored = entries
     .flatMap((entry) => {
       if (entry.title.category !== category) return [];
-      const score = latestRound(entry.rounds)?.score ?? null;
+      const score = entryScore(entry);
       const rank = rankForScore(score);
       return score === null || rank === null ? [] : [{ ...entry, score, rank }];
     })

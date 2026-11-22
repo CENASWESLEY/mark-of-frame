@@ -7,6 +7,33 @@ import { createTitle, TitleRuleError, updateTitle } from "./title-store";
 import { refreshArchive } from "@/shared/lib/refresh-archive";
 import { validationFailure, type ActionState } from "@/shared/lib/action-state";
 import { z } from "zod";
+import { installmentInputSchema } from "../domain/installment";
+import { saveInstallment } from "./installment-store";
+
+export async function saveInstallmentAction(
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const parsed = installmentInputSchema.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return validationFailure(parsed.error);
+  const id = form.get("installmentId");
+  if (id && !z.string().uuid().safeParse(id).success)
+    return { status: "error", message: "รหัสภาคไม่ถูกต้อง" };
+  try {
+    saveInstallment(
+      getDatabase(),
+      parsed.data,
+      typeof id === "string" && id ? id : undefined,
+    );
+  } catch (error) {
+    return {
+      status: "error",
+      message: error instanceof Error ? error.message : "บันทึกไม่สำเร็จ",
+    };
+  }
+  refreshArchive(parsed.data.titleId);
+  return { status: "success", message: "บันทึกซีซัน/ภาคแล้ว" };
+}
 
 export async function saveTitleAction(
   _: ActionState,

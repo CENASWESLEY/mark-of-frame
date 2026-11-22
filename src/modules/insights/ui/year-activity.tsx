@@ -75,7 +75,11 @@ export function YearActivity({
             <time dateTime={date}>{formatDate(date, "en-GB")}</time>
             <div>
               <h4>
-                <Link href={`/titles/${title.id}`}>{title.name}</Link>
+                <Link
+                  href={`/titles/${title.id}${round.installmentId ? `?part=${round.installmentId}` : ""}`}
+                >
+                  {title.name}
+                </Link>
               </h4>
               <p>
                 {categoryEnglishLabel(title.category)} ·{" "}

@@ -1,4 +1,5 @@
 import type { ArchiveEntry } from "@/modules/catalog/domain/archive-entry";
+import { entryScore } from "@/modules/catalog/domain/series";
 import {
   categories,
   isEpisodic,
@@ -6,7 +7,6 @@ import {
 } from "@/modules/catalog/domain/title";
 import {
   compareRoundsNewestFirst,
-  latestRound,
   type WatchRound,
 } from "@/modules/watching/domain/watch-round";
 import { rankEntries } from "@/modules/rankings/domain/rankings";
@@ -67,7 +67,7 @@ export function buildYearReview(
       }
       return Number(date.slice(0, 4)) === year;
     });
-    if (rounds.length) entries.push({ title: entry.title, rounds });
+    if (rounds.length) entries.push({ ...entry, rounds });
     for (const round of rounds) {
       const date = viewingDate(round);
       if (date) log.push({ title: entry.title, round, date });
@@ -84,11 +84,13 @@ export function buildYearReview(
       .filter((round) => round.status === "completed")
       .sort(compareRoundsNewestFirst)
       .reverse();
-    rewatches += completed
-      .slice(1)
-      .filter(
-        (round) => viewingDate(round)?.slice(0, 4) === String(year),
-      ).length;
+    const seen = new Set<string | null>();
+    for (const round of completed) {
+      const key = round.installmentId ?? null;
+      if (seen.has(key) && viewingDate(round)?.slice(0, 4) === String(year))
+        rewatches++;
+      seen.add(key);
+    }
   }
   log.sort((a, b) => compareRoundsNewestFirst(a.round, b.round));
   const months = monthNames.map((name, index) => ({
@@ -162,9 +164,7 @@ export function buildYearReview(
     timedFilmViewings,
     undatedViewings,
     mostActiveMonth: mostActiveMonth?.viewings ? mostActiveMonth : null,
-    unscoredTitles: entries.filter(
-      (entry) => latestRound(entry.rounds)?.score == null,
-    ).length,
+    unscoredTitles: entries.filter((entry) => entryScore(entry) == null).length,
   };
 }
 

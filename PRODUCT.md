@@ -31,7 +31,7 @@ Local durable SQLite storage, cinematic Hall of Frame, searchable/filterable lib
 ## Open decisions and temporary defaults
 
 - Rank thresholds are not yet confirmed. Initial configurable thresholds: S >=9, A >=8, B >=7, C >=5, D below5.
-- Season scoring is not yet confirmed. First version has title-level watch rounds and per-round season/progress; seasons are not separately ranked.
+- Multi-part stories keep separate installments and viewing rounds. The Hall remains one story per entry, with an equal average of the latest scored round of each installment. A newer unscored round excludes that installment; explicit zero participates. Unwatched parts have no score.
 - Scoring unfinished rounds is not yet confirmed. First version permits it; if the newest round has no score, the title is unranked until scored. This respects latest-round-only without silently reusing old scores.
 - Ties receive the same rank; a stable title-name order decides display position when a Top 5/10 cut falls inside a tie. No rewatch-count tiebreak.
 - Initial taxonomy: live-action film, live-action series, anime series, anime film, other animated film, other animated series, documentary film, documentary series, short film. Expand through one category definition.
@@ -45,12 +45,18 @@ Local durable SQLite storage, cinematic Hall of Frame, searchable/filterable lib
 - Centered Hall of Frame heading below the image, gold/black depth, gradient and glow; faint animated mist on this experience surface.
 - Italic dimensional game-style rank letters; gold, white, burgundy and purple retain their established roles.
 - All-Time Ten always shows up to ten ranked titles, with poster/list views and separate category controls.
-- Library uses full-width list rows by default, with details at left and rank/score at right; editing remains available there.
+- Library offers full-width list rows, with details at left and rank/score at right; editing remains available there. The 22 November follow-up makes the smaller poster grid the default and moves search, sort and filters into a collapsible sidebar.
 - Manage shows all category groups on one page, including the add-title editor. The former /titles/new URL redirects into Manage.
 - Headings and descriptions are English; personal notes, metadata and existing Thai input labels remain intact.
 - Annual analysis uses actual viewing dates, never release dates. Annual rankings use the final viewing inside the selected year; all-time rankings retain the final viewing overall. Averages and winners stay separate by category. Unknown dates and durations are explicitly excluded from applicable totals.
 - Settings offers full JSON export, validated import preview and atomic merge. Existing identities are never deleted or overwritten. File backups preserve links to artwork, not image binaries.
-- Collection cards, list rows and the featured Hall preview show a short synopsis. Viewing notes, per-season scoring calculations and import provenance remain in the detail history and memories; never use them as preview fallbacks. Missing synopses have an explicit empty state.
+- Collection cards, list rows and the featured Hall preview show a short synopsis. Detail history and memories show personal feelings only. Original technical import text is preserved in JSON source-note fields, never used as preview fallbacks. Missing synopses have an explicit empty state.
+
+## Confirmed revision — 22 November 2026
+
+- The home podium sits left of centered featured information. Three vertical posters form a triangle: first above second and third, with TOP 3 at its apex. Empty categories are hidden; All-Time Ten posters and rows open title details.
+- Editors and grouped controls are centered. Seasons/parts have explicit identities, ordered metadata, individual scores, progress and feelings. The series chain switches parts immediately; its active card has half opacity and scores/ranks appear inside the bottom of each card. Whole-story feelings remain separately editable.
+- JSON version 2 includes installments and raw source notes; version 1 remains readable. Ordinary import remains additive. A separate reviewed organization file requires the exact original archive, preserves title/viewing identities and source text, and applies atomically. A stale archive is never overwritten.
 
 ## ChatGPT Sites — confirmed 21 November 2026
 
