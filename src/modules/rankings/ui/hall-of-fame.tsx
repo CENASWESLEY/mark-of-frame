@@ -131,29 +131,6 @@ export function HallOfFame({ entries }: { entries: ArchiveEntry[] }) {
             </button>
           ))}
         </div>
-        <div className={styles.podium} aria-label="Top three in this category">
-          {ranked.length > 0 && <h3 className={styles.podiumHeading}>TOP 3</h3>}
-          {ranked.slice(0, 3).map((entry, index) => (
-            <button
-              type="button"
-              key={entry.title.id}
-              onClick={() => carousel.select(entry.title.id)}
-              aria-pressed={entry.title.id === selected?.title.id}
-              aria-label={`Feature number ${index + 1}: ${entry.title.name}`}
-            >
-              <span className={styles.podiumNumber}>
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <span className={styles.podiumCover}>
-                <Artwork src={entry.title.coverUrl} title={entry.title.name} />
-              </span>
-              <span className={styles.podiumText}>
-                <strong>{entry.title.name}</strong>
-                <span>{formatScore(entry.score)} / 10</span>
-              </span>
-            </button>
-          ))}
-        </div>
         {selected ? (
           <div className={styles.heroContent}>
             <p className={styles.place}>
@@ -190,6 +167,37 @@ export function HallOfFame({ entries }: { entries: ArchiveEntry[] }) {
                   ? formatDate(latest.finishedOn ?? latest.startedOn)
                   : "Viewing date not recorded"}
               </span>
+            </div>
+            <div
+              className={styles.podium}
+              aria-label="Top three in this category"
+            >
+              {ranked.length > 0 && (
+                <h3 className={styles.podiumHeading}>TOP 3</h3>
+              )}
+              {ranked.slice(0, 3).map((entry, index) => (
+                <button
+                  type="button"
+                  key={entry.title.id}
+                  onClick={() => carousel.select(entry.title.id)}
+                  aria-pressed={entry.title.id === selected?.title.id}
+                  aria-label={`Feature number ${index + 1}: ${entry.title.name}`}
+                >
+                  <span className={styles.podiumNumber}>
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span className={styles.podiumCover}>
+                    <Artwork
+                      src={entry.title.coverUrl}
+                      title={entry.title.name}
+                    />
+                  </span>
+                  <span className={styles.podiumText}>
+                    <strong>{entry.title.name}</strong>
+                    <span>{formatScore(entry.score)} / 10</span>
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
         ) : (
@@ -283,7 +291,7 @@ export function HallOfFame({ entries }: { entries: ArchiveEntry[] }) {
               aria-pressed={category === item.id}
               onClick={() => changeCategory(item.id)}
             >
-              {item.label}
+              {categoryEnglishLabel(item.id)}
               <span>{rankEntries(entries, item.id).length}</span>
             </button>
           ))}

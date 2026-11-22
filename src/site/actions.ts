@@ -1,8 +1,8 @@
+import { archiveImportBackupSchema } from "@/modules/backup/domain/archive-import";
 import { z } from "zod";
 import { titleInputSchema } from "@/modules/catalog/domain/title";
 import { watchRoundInputSchema } from "@/modules/watching/domain/watch-round";
 import {
-  archiveBackupSchema,
   maximumBackupBytes,
   type ImportSummary,
 } from "@/modules/backup/domain/archive-backup";
@@ -10,7 +10,7 @@ import { validationFailure, type ActionState } from "@/shared/lib/action-state";
 import { changeArchive } from "./runtime";
 import { navigate } from "./navigation";
 import { installmentInputSchema } from "@/modules/catalog/domain/installment";
-import { seriesOrganizationSchema } from "@/modules/backup/domain/series-organization";
+import { seriesOrganizationDocumentSchema } from "@/modules/backup/domain/series-organization";
 
 export async function saveInstallmentAction(
   _: ActionState,
@@ -44,7 +44,9 @@ export async function organizeSeriesAction(
       message: "Choose an organization JSON smaller than 8 MB.",
     };
   try {
-    const plan = seriesOrganizationSchema.parse(JSON.parse(await file.text()));
+    const plan = seriesOrganizationDocumentSchema.parse(
+      JSON.parse(await file.text()),
+    );
     await changeArchive((archive) => archive.organize(plan));
     return {
       status: "success",
@@ -141,7 +143,7 @@ export async function importBackupAction(
     };
   try {
     const raw: unknown = JSON.parse(await file.text());
-    const parsed = archiveBackupSchema.safeParse(raw);
+    const parsed = archiveImportBackupSchema.safeParse(raw);
     if (!parsed.success)
       return {
         status: "error",

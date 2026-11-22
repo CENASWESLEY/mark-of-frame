@@ -54,9 +54,10 @@ Local durable SQLite storage, cinematic Hall of Frame, searchable/filterable lib
 
 ## Confirmed revision — 22 November 2026
 
-- The home podium sits left of centered featured information. Three vertical posters form a triangle: first above second and third, with TOP 3 at its apex. Empty categories are hidden; All-Time Ten posters and rows open title details.
+- The home podium uses compact posters beneath Open my memory, as revised in the latest follow-up. Category buttons use self-hosted Caveat handwriting with a dark text shadow, a gold selected state and no rectangular background. Empty categories are hidden; All-Time Ten posters and rows open title details.
 - Editors and grouped controls are centered. Seasons/parts have explicit identities, ordered metadata, individual scores, progress and feelings. The series chain switches parts immediately; its active card has half opacity and scores/ranks appear inside the bottom of each card. Whole-story feelings remain separately editable.
 - JSON version 2 includes installments and raw source notes; version 1 remains readable. Ordinary import remains additive. A separate reviewed organization file requires the exact original archive, preserves title/viewing identities and source text, and applies atomically. A stale archive is never overwritten.
+- A portable corrected backup can include its reviewed organization plan. Settings chooses the exact repair for the original collection and additive import for a new or different collection, shows the number of seasons being added, and validates that both payloads contain the same records. Season cards sit directly after the viewing-count row in title details.
 
 ## ChatGPT Sites — confirmed 21 November 2026
 

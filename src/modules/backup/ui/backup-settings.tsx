@@ -2,13 +2,16 @@
 import { useActionState, useRef, useState } from "react";
 import { ArchiveRestore, Download, FileJson, ShieldCheck } from "lucide-react";
 import {
-  archiveBackupSchema,
-  inspectBackup,
   maximumBackupBytes,
   type BackupInventory,
   type ImportSummary,
 } from "../domain/archive-backup";
-import { importBackupAction, type BackupActionState } from "../server/actions";
+import {
+  importBackupAction,
+  organizeSeriesAction,
+  type BackupActionState,
+} from "../server/actions";
+import { reviewArchiveImport } from "../domain/archive-import";
 import { FormFeedback } from "@/shared/ui/form-field";
 import { formatDate } from "@/shared/lib/format-date";
 import styles from "./backup-settings.module.css";
@@ -29,6 +32,7 @@ export function BackupSettings({
     exportedAt: string;
     titles: number;
     rounds: number;
+    mode: "merge" | "organize";
   } | null>(null);
   const [error, setError] = useState("");
   const [checking, setChecking] = useState(false);
@@ -37,8 +41,15 @@ export function BackupSettings({
   const [state, action, pending] = useActionState<BackupActionState, FormData>(
     async (previous) => {
       const payload = new FormData();
-      if (file) payload.set("backup", file);
-      const result = await importBackupAction(previous, payload);
+      if (file)
+        payload.set(
+          preview?.mode === "organize" ? "organization" : "backup",
+          file,
+        );
+      const result =
+        preview?.mode === "organize"
+          ? await organizeSeriesAction(previous, payload)
+          : await importBackupAction(previous, payload);
       if (result.status === "success") {
         version.current++;
         setFile(null);
@@ -64,19 +75,14 @@ export function BackupSettings({
     try {
       const raw: unknown = JSON.parse(await next.text());
       if (request !== version.current) return;
-      const parsed = archiveBackupSchema.safeParse(raw);
-      if (!parsed.success) {
-        setError(
-          `This file is not a compatible backup: ${parsed.error.issues[0]?.message ?? "invalid records"}`,
-        );
-        return;
-      }
+      const reviewed = reviewArchiveImport(raw, inventory);
       setFile(next);
       setPreview({
-        summary: inspectBackup(parsed.data, inventory),
-        exportedAt: parsed.data.exportedAt,
-        titles: parsed.data.entries.length,
-        rounds: parsed.data.entries.reduce(
+        mode: reviewed.mode,
+        summary: reviewed.summary,
+        exportedAt: reviewed.backup.exportedAt,
+        titles: reviewed.backup.entries.length,
+        rounds: reviewed.backup.entries.reduce(
           (sum, entry) => sum + entry.rounds.length,
           0,
         ),
@@ -98,6 +104,12 @@ export function BackupSettings({
           Your archive holds <strong>{inventory.titleIds.length}</strong> titles
           and <strong>{inventory.roundIds.length}</strong> viewing records on
           this device.
+          {Boolean(inventory.installmentIds?.length) && (
+            <>
+              {" "}
+              Your seasons: <strong>{inventory.installmentIds?.length}</strong>.
+            </>
+          )}
         </span>
       </div>
       <section className={styles.section}>
@@ -174,13 +186,23 @@ export function BackupSettings({
           {preview && (
             <div className={styles.preview} aria-label="Import preview">
               <div className={styles.previewTitle}>
-                <h3>Ready for your review</h3>
+                <h3>
+                  {preview.mode === "organize"
+                    ? "Season update ready for review"
+                    : "Ready for your review"}
+                </h3>
                 <span>Exported {formatDate(preview.exportedAt)}</span>
               </div>
               <p>
                 {preview.titles} titles · {preview.rounds} viewing records
               </p>
               <dl>
+                {Boolean(preview.summary.installmentsAdded) && (
+                  <div>
+                    <dt>New seasons / parts</dt>
+                    <dd>{preview.summary.installmentsAdded}</dd>
+                  </div>
+                )}
                 <div>
                   <dt>New titles</dt>
                   <dd>{preview.summary.titlesAdded}</dd>
@@ -199,8 +221,9 @@ export function BackupSettings({
                 </div>
               </dl>
               <p className={styles.note}>
-                Merge by record identity. Nothing is removed or overwritten. The
-                entire import is rolled back if any record cannot be saved.
+                {preview.mode === "organize"
+                  ? "This file separates seasons and cleans imported notes for this exact collection. Original text remains in the JSON source archive. If your records have changed since this file was prepared, nothing is applied."
+                  : "Merge by record identity. Nothing is removed or overwritten. The entire import is rolled back if any record cannot be saved."}
               </p>
             </div>
           )}
@@ -211,7 +234,11 @@ export function BackupSettings({
               disabled={!file || !preview || pending}
             >
               <ArchiveRestore size={16} aria-hidden="true" />
-              {pending ? "Importing…" : "Import reviewed backup"}
+              {pending
+                ? "Importing…"
+                : preview?.mode === "organize"
+                  ? "Apply reviewed season update"
+                  : "Import reviewed backup"}
             </button>
             {file && (
               <button

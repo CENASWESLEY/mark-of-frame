@@ -69,6 +69,13 @@ export const seriesOrganizationSchema = z
     }
   });
 export type SeriesOrganization = z.output<typeof seriesOrganizationSchema>;
+/** Portable backups may carry a reviewed repair for the archive they came from. */
+export const seriesOrganizationDocumentSchema = z.union([
+  seriesOrganizationSchema,
+  z
+    .object({ organization: seriesOrganizationSchema })
+    .transform((value) => value.organization),
+]);
 function state(entries: ArchiveEntry[]) {
   return JSON.stringify(
     createArchiveBackup(entries, "2000-01-01T00:00:00.000Z")

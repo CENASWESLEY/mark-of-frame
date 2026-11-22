@@ -1,4 +1,12 @@
 /* Self-hosted Google Fonts, SIL Open Font License. */
+/* Caveat — category navigation, SIL OFL; source: google/fonts. */
+@font-face {
+  font-family: "Caveat";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(/fonts/caveat.ttf) format("truetype");
+}
 @font-face {
   font-family: "Cormorant Garamond";
   font-style: italic;

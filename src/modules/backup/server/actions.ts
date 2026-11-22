@@ -1,16 +1,17 @@
 "use server";
 
+import { archiveImportBackupSchema } from "@/modules/backup/domain/archive-import";
+
 import { revalidatePath } from "next/cache";
 import { getDatabase } from "@/infrastructure/database/server";
 import {
-  archiveBackupSchema,
   maximumBackupBytes,
   type ImportSummary,
 } from "../domain/archive-backup";
 import { mergeBackup } from "./backup-store";
 import { WatchRuleError } from "@/modules/watching/server/watch-store";
 import type { ActionState } from "@/shared/lib/action-state";
-import { seriesOrganizationSchema } from "../domain/series-organization";
+import { seriesOrganizationDocumentSchema } from "../domain/series-organization";
 import { organizeSeries } from "./backup-store";
 
 export async function organizeSeriesAction(
@@ -24,7 +25,9 @@ export async function organizeSeriesAction(
       message: "Choose an organization JSON smaller than 8 MB.",
     };
   try {
-    const plan = seriesOrganizationSchema.parse(JSON.parse(await file.text()));
+    const plan = seriesOrganizationDocumentSchema.parse(
+      JSON.parse(await file.text()),
+    );
     organizeSeries(getDatabase(), plan);
   } catch (error) {
     return {
@@ -64,7 +67,7 @@ export async function importBackupAction(
       message: "This file is not valid JSON. No data was changed.",
     };
   }
-  const parsed = archiveBackupSchema.safeParse(raw);
+  const parsed = archiveImportBackupSchema.safeParse(raw);
   if (!parsed.success)
     return {
       status: "error",

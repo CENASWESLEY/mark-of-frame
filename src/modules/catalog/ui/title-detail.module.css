@@ -6,13 +6,15 @@
   margin-bottom: 29px;
 }
 .chain {
-  margin-top: 42px;
-  padding-top: 28px;
+  min-width: 0;
+  margin-top: 22px;
+  padding-top: 18px;
   border-top: 1px solid var(--line);
 }
 .chainCards {
+  min-width: 0;
   display: flex;
-  gap: 18px;
+  gap: 14px;
   overflow-x: auto;
   padding: 12px 0 20px;
   scroll-snap-type: x proximity;
@@ -21,7 +23,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  flex: 0 0 190px;
+  flex: 0 0 160px;
   min-width: 0;
   color: var(--text);
   text-decoration: none;
@@ -82,7 +84,7 @@
 }
 .intro {
   display: grid;
-  grid-template-columns: minmax(150px, 230px) 1fr;
+  grid-template-columns: minmax(150px, 230px) minmax(0, 1fr);
   gap: 40px;
   align-items: start;
 }
@@ -97,6 +99,7 @@
   overflow-wrap: anywhere;
 }
 .info {
+  min-width: 0;
   position: relative;
   min-height: 260px;
   padding-right: 225px;
@@ -201,6 +204,21 @@
   font-variant-numeric: tabular-nums;
 }
 @media (max-width: 700px) {
+  .chainCard {
+    flex-basis: 140px;
+  }
+  .chainCards {
+    gap: 10px;
+  }
+  .chainBottom {
+    gap: 8px;
+  }
+  .chainScore {
+    font-size: 21px;
+  }
+  .chain :global(.sectionHeading h2) {
+    font-size: 25px;
+  }
   .info {
     padding-right: 0;
     min-height: 0;
@@ -213,7 +231,7 @@
     min-width: 0;
   }
   .intro {
-    grid-template-columns: 110px 1fr;
+    grid-template-columns: 110px minmax(0, 1fr);
     gap: 21px;
   }
   .info h1 {
@@ -251,7 +269,7 @@
 }
 @media (max-width: 380px) {
   .intro {
-    grid-template-columns: 80px 1fr;
+    grid-template-columns: 80px minmax(0, 1fr);
     gap: 16px;
   }
   .info h1 {

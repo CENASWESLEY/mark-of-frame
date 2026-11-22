@@ -22,9 +22,7 @@ export function SeriesChain({
       <div className="sectionHeading">
         <div>
           <h2>One story, many chapters.</h2>
-          <p>
-            Follow the seasons in order. Each keeps its own score and memories.
-          </p>
+          <p>Choose a season to revisit its score and memories.</p>
         </div>
       </div>
       <Link
@@ -61,7 +59,7 @@ export function SeriesChain({
                 <span className={styles.chainCount}>
                   ดูจบทั้งหมด {completedViewings(rounds)} รอบ
                 </span>
-                <RankBadge rank={rankForScore(score)} />
+                <RankBadge rank={rankForScore(score)} size="small" />
                 <span className={styles.chainScore}>
                   {formatScore(score)}
                   <small> / 10</small>

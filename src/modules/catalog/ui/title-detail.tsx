@@ -96,9 +96,6 @@ export function TitleDetail({
             <Star size={16} aria-hidden="true" />
             ดูจบทั้งหมด {count} รอบ · ดูซ้ำ {Math.max(count - 1, 0)} ครั้ง
           </p>
-          {title.synopsis && (
-            <p className={styles.synopsis}>{title.synopsis}</p>
-          )}
           {title.isDemo && (
             <p className="sampleLabel">ข้อมูลเรื่อง คะแนน และบันทึกตัวอย่าง</p>
           )}
@@ -107,6 +104,7 @@ export function TitleDetail({
       {Boolean(entry.installments?.length) && (
         <SeriesChain entry={entry} activeId={part?.id ?? "overall"} />
       )}
+      {title.synopsis && <p className={styles.synopsis}>{title.synopsis}</p>}
       {part && (
         <p className={styles.seriesSummary}>
           Series overall · {formatScore(entryScore(entry))} / 10
