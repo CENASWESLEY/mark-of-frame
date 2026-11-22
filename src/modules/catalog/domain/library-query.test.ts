@@ -82,7 +82,7 @@ describe("library query contract", () => {
             category: "film",
             genre: "Drama",
             country: "Japan",
-            rank: "A",
+            rank: "A+",
             status: "completed",
             minimumScore: 800,
           },

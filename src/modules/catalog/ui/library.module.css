@@ -121,10 +121,15 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  /* An indefinite grid resolves each 1fr row from the tallest content across all rows. */
+  grid-auto-rows: 1fr;
   gap: 28px 18px;
 }
 .grid > div {
   min-width: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  row-gap: 12px;
 }
 @media (max-width: 850px) {
   .layoutOpen {

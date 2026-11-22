@@ -17,7 +17,7 @@ export function TitleRow({
   editable = false,
 }: {
   entry: ArchiveEntry;
-  position?: number;
+  position?: number | null;
   editable?: boolean;
 }) {
   const { title, rounds } = entry;
@@ -27,8 +27,15 @@ export function TitleRow({
   return (
     <article className={styles.row}>
       {position !== undefined && (
-        <span className={styles.position}>
-          {String(position).padStart(2, "0")}
+        <span
+          className={styles.position}
+          aria-label={
+            position === null
+              ? "ยังไม่มีอันดับ"
+              : `อันดับ ${position} ใน${categoryEnglishLabel(title.category)}`
+          }
+        >
+          {position === null ? "—" : String(position).padStart(2, "0")}
         </span>
       )}
       <Link

@@ -30,7 +30,7 @@ Local durable SQLite storage, cinematic Hall of Frame, searchable/filterable lib
 
 ## Open decisions and temporary defaults
 
-- Rank thresholds are not yet confirmed. Initial configurable thresholds: S >=9, A >=8, B >=7, C >=5, D below5.
+- Confirmed rank thresholds: S >=9, A+ >=8.5, A >=8, B+ >=7.5, B >=7, C+ >=6, C >=5, D+ >=4, D below4. S is the ceiling; no S+.
 - Multi-part stories keep separate installments and viewing rounds. The Hall remains one story per entry, with an equal average of the latest scored round of each installment. A newer unscored round excludes that installment; explicit zero participates. Unwatched parts have no score.
 - Scoring unfinished rounds is not yet confirmed. First version permits it; if the newest round has no score, the title is unranked until scored. This respects latest-round-only without silently reusing old scores.
 - Ties receive the same rank; a stable title-name order decides display position when a Top 5/10 cut falls inside a tie. No rewatch-count tiebreak.
@@ -54,7 +54,8 @@ Local durable SQLite storage, cinematic Hall of Frame, searchable/filterable lib
 
 ## Confirmed revision — 22 November 2026
 
-- The home podium uses compact posters beneath Open my memory, as revised in the latest follow-up. Category buttons use self-hosted Caveat handwriting with a dark text shadow, a gold selected state and no rectangular background. Empty categories are hidden; All-Time Ten posters and rows open title details.
+- The latest home revision uses two desktop columns: details and compact Top 3 at left, featured cover at right, over a dark left-to-right gradient. The hero is capped at850px and uses the available viewport after the measured header. Long titles reserve two lines; slideshow controls retain their own bottom row. Narrow screens rearrange the cover beside the title and keep the remaining controls below. Category buttons use light italic Cormorant like the logo, a dark shadow and gold selection. Number badges are rounded. Empty categories are hidden; All-Time Ten posters and rows open title details.
+- Collection poster cards share the tallest grid-item height across the current list; year/score and Edit details align despite different title lengths. List rows include a first column for the title's position within its own category, preserving ties. Unscored records display a dash. Filtering and sorting do not change the underlying category position.
 - Editors and grouped controls are centered. Seasons/parts have explicit identities, ordered metadata, individual scores, progress and feelings. The series chain switches parts immediately; its active card has half opacity and scores/ranks appear inside the bottom of each card. Whole-story feelings remain separately editable.
 - JSON version 2 includes installments and raw source notes; version 1 remains readable. Ordinary import remains additive. A separate reviewed organization file requires the exact original archive, preserves title/viewing identities and source text, and applies atomically. A stale archive is never overwritten.
 - A portable corrected backup can include its reviewed organization plan. Settings chooses the exact repair for the original collection and additive import for a new or different collection, shows the number of seasons being added, and validates that both payloads contain the same records. Season cards sit directly after the viewing-count row in title details.

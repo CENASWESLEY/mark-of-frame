@@ -1,5 +1,7 @@
 .poster {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   min-width: 0;
   padding: 0;
   text-align: left;
@@ -11,6 +13,7 @@
   cursor: pointer;
 }
 .cover {
+  flex: none;
   aspect-ratio: 2/3;
   display: block;
   position: relative;
@@ -54,8 +57,9 @@
   fill: #b39adc33;
 }
 .caption {
+  flex: 1;
   display: flex;
-  align-items: start;
+  align-items: stretch;
   gap: 10px;
   padding-top: 14px;
 }
@@ -68,6 +72,8 @@
   letter-spacing: -1px;
 }
 .captionBody {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
   flex: 1;
 }
@@ -84,7 +90,8 @@
   gap: 7px;
   font-size: 12px;
   color: var(--muted);
-  margin-top: 7px;
+  margin-top: auto;
+  padding-top: 7px;
 }
 .score {
   color: var(--gold);

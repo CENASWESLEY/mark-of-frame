@@ -1,6 +1,7 @@
 "use client";
 
-import { useDeferredValue, useState, useRef } from "react";
+import { useDeferredValue, useState, useRef, useMemo } from "react";
+import { categoryPositions } from "@/modules/rankings/domain/rankings";
 import Link from "next/link";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { categories } from "../domain/title";
@@ -22,6 +23,7 @@ import type { ArchiveEntry } from "@/modules/catalog/domain/archive-entry";
 import styles from "./library.module.css";
 
 export function Library({ entries }: { entries: ArchiveEntry[] }) {
+  const positions = useMemo(() => categoryPositions(entries), [entries]);
   const [search, setSearch] = useState("");
   const query = useDeferredValue(search);
   const [category, setCategory] = useState("");
@@ -262,7 +264,12 @@ export function Library({ entries }: { entries: ArchiveEntry[] }) {
                   </Link>
                 </div>
               ) : (
-                <TitleRow key={entry.title.id} entry={entry} editable />
+                <TitleRow
+                  key={entry.title.id}
+                  entry={entry}
+                  position={positions.get(entry.title.id) ?? null}
+                  editable
+                />
               ),
             )}
           </div>

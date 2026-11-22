@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { rankEntries } from "./rankings";
+import { rankEntries, categoryPositions } from "./rankings";
 import type { ArchiveEntry } from "@/modules/catalog/domain/archive-entry";
 import { rankForScore, scoreInputSchema } from "./score";
 import type { WatchRound } from "@/modules/watching/domain/watch-round";
@@ -49,6 +49,23 @@ function entry(
 }
 
 describe("personal rankings", () => {
+  it("keeps list positions category-specific, tied and independent from visual sorting", () => {
+    const archive = [
+      entry("Film first", [round(900, "2026-01-01")]),
+      entry("Film tied", [round(900, "2026-01-01")]),
+      entry("Film next", [round(800, "2026-01-01")]),
+      entry("Anime first", [round(700, "2026-01-01")], "anime"),
+      entry("Unscored", []),
+    ];
+    const positions = categoryPositions(archive);
+    expect([...positions]).toEqual([
+      ["Film first", 1],
+      ["Film tied", 1],
+      ["Film next", 3],
+      ["Anime first", 1],
+    ]);
+    expect(positions.has("Unscored")).toBe(false);
+  });
   it("uses a lower latest score instead of maximum or average", () => {
     const result = rankEntries(
       [
@@ -113,6 +130,28 @@ describe("personal rankings", () => {
 
 describe("score input", () => {
   it.each([
+    [0, "D"],
+    [399, "D"],
+    [400, "D+"],
+    [499, "D+"],
+    [500, "C"],
+    [599, "C"],
+    [600, "C+"],
+    [699, "C+"],
+    [700, "B"],
+    [749, "B"],
+    [750, "B+"],
+    [799, "B+"],
+    [800, "A"],
+    [849, "A"],
+    [850, "A+"],
+    [899, "A+"],
+    [900, "S"],
+    [1000, "S"],
+  ] as const)("uses the agreed rank for %i hundredths", (score, rank) =>
+    expect(rankForScore(score)).toBe(rank),
+  );
+  it.each([
     ["8.65", 865],
     ["5.3", 530],
     ["10.00", 1000],
@@ -125,7 +164,7 @@ describe("score input", () => {
     expect(scoreInputSchema.safeParse(input).success).toBe(false),
   );
   it("derives rank at exact thresholds", () => {
-    expect(rankForScore(899)).toBe("A");
+    expect(rankForScore(899)).toBe("A+");
     expect(rankForScore(900)).toBe("S");
     expect(rankForScore(null)).toBeNull();
   });

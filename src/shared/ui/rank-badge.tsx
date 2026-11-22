@@ -14,7 +14,10 @@ export function RankBadge({
       role="img"
       aria-label={rank ? `Rank ${rank}` : "Unranked"}
     >
-      <span aria-hidden="true">{rank ?? "—"}</span>
+      <span aria-hidden="true">
+        {rank?.[0] ?? "—"}
+        {rank?.endsWith("+") && <sup className={styles.plus}>+</sup>}
+      </span>
     </span>
   );
 }

@@ -14,9 +14,13 @@ export const scoreInputSchema = z
 
 export const rankThresholds = [
   { rank: "S", minimum: 900 },
+  { rank: "A+", minimum: 850 },
   { rank: "A", minimum: 800 },
+  { rank: "B+", minimum: 750 },
   { rank: "B", minimum: 700 },
+  { rank: "C+", minimum: 600 },
   { rank: "C", minimum: 500 },
+  { rank: "D+", minimum: 400 },
   { rank: "D", minimum: 0 },
 ] as const;
 

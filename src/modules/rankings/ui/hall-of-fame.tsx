@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -30,6 +30,22 @@ import { storyViewings } from "@/modules/catalog/domain/series";
 import styles from "./hall-of-fame.module.css";
 
 export function HallOfFame({ entries }: { entries: ArchiveEntry[] }) {
+  const heroRef = useRef<HTMLElement>(null);
+  useLayoutEffect(() => {
+    const hero = heroRef.current,
+      header = document.querySelector("header");
+    if (!hero || !header) return;
+    // Header wrapping changes with viewport width and fonts; reserve its actual height.
+    const measure = () =>
+      hero.style.setProperty(
+        "--showcase-header",
+        `${header.getBoundingClientRect().height}px`,
+      );
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, []);
   const visibleCategories = categories.filter((item) =>
     entries.some((entry) => entry.title.category === item.id),
   );
@@ -77,6 +93,7 @@ export function HallOfFame({ entries }: { entries: ArchiveEntry[] }) {
   return (
     <div className={styles.hall}>
       <section
+        ref={heroRef}
         className={styles.hero}
         aria-label="Featured top ten slideshow"
         onFocusCapture={() => carousel.setFocused(true)}
@@ -131,88 +148,106 @@ export function HallOfFame({ entries }: { entries: ArchiveEntry[] }) {
             </button>
           ))}
         </div>
-        {selected ? (
-          <div className={styles.heroContent}>
-            <p className={styles.place}>
-              <Crown size={17} aria-hidden="true" />
-              No. {String(selected.position).padStart(2, "0")} in{" "}
-              {categoryEnglishLabel(category)}
-              {selected.title.isDemo && (
-                <span className="sampleLabel">Sample collection</span>
-              )}
-            </p>
-            <h2>{selected.title.name}</h2>
-            {metadata && <p className={styles.metadata}>{metadata}</p>}
-            <div className={styles.verdict}>
-              <RankBadge rank={selected.rank} size="large" />
-              <span className={styles.score}>
-                {formatScore(selected.score)}
-                <small>/ 10</small>
-              </span>
-              <span className={styles.rewatch}>
-                <Star size={15} aria-hidden="true" />
-                {storyViewings(selected)} viewings
-              </span>
-            </div>
-            <p className={styles.synopsis}>
-              {selected.title.synopsis || "Synopsis coming soon."}
-            </p>
-            <div className={styles.heroActions}>
-              <Link href={`/titles/${selected.title.id}`} className="button">
-                <BookOpen size={16} aria-hidden="true" />
-                Open my memory
-              </Link>
-              <span>
-                {latest?.finishedOn || latest?.startedOn
-                  ? formatDate(latest.finishedOn ?? latest.startedOn)
-                  : "Viewing date not recorded"}
-              </span>
-            </div>
-            <div
-              className={styles.podium}
-              aria-label="Top three in this category"
-            >
-              {ranked.length > 0 && (
-                <h3 className={styles.podiumHeading}>TOP 3</h3>
-              )}
-              {ranked.slice(0, 3).map((entry, index) => (
-                <button
-                  type="button"
-                  key={entry.title.id}
-                  onClick={() => carousel.select(entry.title.id)}
-                  aria-pressed={entry.title.id === selected?.title.id}
-                  aria-label={`Feature number ${index + 1}: ${entry.title.name}`}
+        <div className={styles.showcase}>
+          {selected ? (
+            <>
+              <div className={styles.heroContent}>
+                <p className={styles.place}>
+                  <Crown size={17} aria-hidden="true" />
+                  No. {String(selected.position).padStart(2, "0")} in{" "}
+                  {categoryEnglishLabel(category)}
+                  {selected.title.isDemo && (
+                    <span className="sampleLabel">Sample collection</span>
+                  )}
+                </p>
+                <h2 title={selected.title.name}>{selected.title.name}</h2>
+                {metadata && <p className={styles.metadata}>{metadata}</p>}
+                <div className={styles.verdict}>
+                  <RankBadge rank={selected.rank} size="large" />
+                  <span className={styles.score}>
+                    {formatScore(selected.score)}
+                    <small>/ 10</small>
+                  </span>
+                  <span className={styles.rewatch}>
+                    <Star size={15} aria-hidden="true" />
+                    {storyViewings(selected)} viewings
+                  </span>
+                </div>
+                <p className={styles.synopsis}>
+                  {selected.title.synopsis || "Synopsis coming soon."}
+                </p>
+                <div className={styles.heroActions}>
+                  <Link
+                    href={`/titles/${selected.title.id}`}
+                    className="button"
+                  >
+                    <BookOpen size={16} aria-hidden="true" />
+                    Open my memory
+                  </Link>
+                  <span>
+                    {latest?.finishedOn || latest?.startedOn
+                      ? formatDate(latest.finishedOn ?? latest.startedOn)
+                      : "Viewing date not recorded"}
+                  </span>
+                </div>
+                <div
+                  className={styles.podium}
+                  aria-label="Top three in this category"
                 >
-                  <span className={styles.podiumNumber}>
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <span className={styles.podiumCover}>
-                    <Artwork
-                      src={entry.title.coverUrl}
-                      title={entry.title.name}
-                    />
-                  </span>
-                  <span className={styles.podiumText}>
-                    <strong>{entry.title.name}</strong>
-                    <span>{formatScore(entry.score)} / 10</span>
-                  </span>
-                </button>
-              ))}
+                  {ranked.length > 0 && (
+                    <h3 className={styles.podiumHeading}>TOP 3</h3>
+                  )}
+                  {ranked.slice(0, 3).map((entry, index) => (
+                    <button
+                      type="button"
+                      key={entry.title.id}
+                      onClick={() => carousel.select(entry.title.id)}
+                      aria-pressed={entry.title.id === selected?.title.id}
+                      aria-label={`Feature number ${index + 1}: ${entry.title.name}`}
+                    >
+                      <span className={styles.podiumNumber}>
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span className={styles.podiumCover}>
+                        <Artwork
+                          src={entry.title.coverUrl}
+                          title={entry.title.name}
+                        />
+                      </span>
+                      <span className={styles.podiumText}>
+                        <strong>{entry.title.name}</strong>
+                        <span>{formatScore(entry.score)} / 10</span>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div
+                className={styles.featuredPoster}
+                key={`cover-${selected.title.id}`}
+              >
+                <Artwork
+                  src={selected.title.coverUrl}
+                  title={selected.title.name}
+                  eager
+                />
+              </div>
+            </>
+          ) : (
+            <div className={`${styles.heroContent} ${styles.emptyContent}`}>
+              <Crown size={40} className="gold" aria-hidden="true" />
+              <h2>The hall awaits.</h2>
+              <p className={styles.metadata}>
+                Every great collection begins with a story worth remembering.
+                Add a title and score your latest viewing to give it a place
+                here.
+              </p>
+              <Link href="/manage?add=1#add-entry" className="button">
+                Add a story
+              </Link>
             </div>
-          </div>
-        ) : (
-          <div className={styles.heroContent}>
-            <Crown size={40} className="gold" aria-hidden="true" />
-            <h2>The hall awaits.</h2>
-            <p className={styles.metadata}>
-              Every great collection begins with a story worth remembering. Add
-              a title and score your latest viewing to give it a place here.
-            </p>
-            <Link href="/manage?add=1#add-entry" className="button">
-              Add a story
-            </Link>
-          </div>
-        )}
+          )}
+        </div>
         <div className={styles.controls}>
           <button
             onClick={() => carousel.step(-1)}

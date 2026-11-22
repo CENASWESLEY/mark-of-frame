@@ -1,4 +1,4 @@
-import type { Category } from "@/modules/catalog/domain/title";
+import { categories, type Category } from "@/modules/catalog/domain/title";
 import { entryScore } from "@/modules/catalog/domain/series";
 import type { ArchiveEntry } from "@/modules/catalog/domain/archive-entry";
 import { rankForScore, type Rank } from "./score";
@@ -8,6 +8,19 @@ export type RankedEntry = ArchiveEntry & {
   rank: Rank;
   position: number;
 };
+
+/** Collection filters and sort order never change a title's rank within its own category. */
+export function categoryPositions(
+  entries: readonly ArchiveEntry[],
+): Map<string, number> {
+  return new Map(
+    categories.flatMap((category) =>
+      rankEntries(entries, category.id).map(
+        (entry) => [entry.title.id, entry.position] as const,
+      ),
+    ),
+  );
+}
 
 export function rankEntries(
   entries: readonly ArchiveEntry[],
