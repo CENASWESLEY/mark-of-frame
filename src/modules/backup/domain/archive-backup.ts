@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+  legacyViewingCount,
+  viewingCountValueSchema,
+} from "@/modules/catalog/domain/viewing-count";
 import { titleInputSchema } from "@/modules/catalog/domain/title";
 import { installmentInputSchema } from "@/modules/catalog/domain/installment";
 import type { ArchiveEntry } from "@/modules/catalog/domain/archive-entry";
@@ -16,6 +20,7 @@ const titleSnapshot = titleInputSchema.omit({ genres: true }).extend({
   genres: z.array(z.string().trim().min(1).max(500)).max(20),
   isDemo: z.boolean(),
   createdAt: timestamp,
+  viewingCount: viewingCountValueSchema.optional(),
 });
 const roundSnapshot = z
   .object({
@@ -51,7 +56,12 @@ export const archiveBackupSchema = z
         z.object({
           title: titleSnapshot,
           installments: z
-            .array(installmentInputSchema.extend({ id: z.string().uuid() }))
+            .array(
+              installmentInputSchema.extend({
+                id: z.string().uuid(),
+                viewingCount: viewingCountValueSchema.optional(),
+              }),
+            )
             .max(1000)
             .optional()
             .default([]),
@@ -127,7 +137,32 @@ export const archiveBackupSchema = z
         message: "Too many viewing records.",
       });
   })
-  .transform((backup) => ({ ...backup, schemaVersion: 2 as const }));
+  .transform((backup) => ({
+    ...backup,
+    schemaVersion: 2 as const,
+    entries: backup.entries.map((entry) => ({
+      ...entry,
+      title: {
+        ...entry.title,
+        viewingCount:
+          entry.title.viewingCount ??
+          legacyViewingCount(
+            entry.rounds,
+            entry.installments.map((part) => part.id),
+          ),
+      },
+      installments: entry.installments.map((part) => ({
+        ...part,
+        originalTitle: part.originalTitle ?? "",
+        runtimeMinutes: part.runtimeMinutes ?? null,
+        viewingCount:
+          part.viewingCount ??
+          legacyViewingCount(
+            entry.rounds.filter((round) => round.installmentId === part.id),
+          ),
+      })),
+    })),
+  }));
 
 export type ArchiveBackup = z.output<typeof archiveBackupSchema>;
 export type BackupInventory = {

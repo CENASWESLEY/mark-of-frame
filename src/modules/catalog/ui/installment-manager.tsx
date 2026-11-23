@@ -6,16 +6,22 @@ import { saveInstallmentAction } from "../server/actions";
 import { initialActionState } from "@/shared/lib/action-state";
 import { FormFeedback } from "@/shared/ui/form-field";
 
-export function InstallmentManager({ entry }: { entry: ArchiveEntry }) {
+export function InstallmentManager({
+  entry,
+  initialPartId,
+}: {
+  entry: ArchiveEntry;
+  initialPartId?: string | null;
+}) {
   const parts = orderedInstallments(entry),
-    [selected, setSelected] = useState("");
+    [selected, setSelected] = useState(initialPartId ?? "");
   const part = parts.find((item) => item.id === selected);
   const [state, action, pending] = useActionState(
     saveInstallmentAction,
     initialActionState,
   );
   return (
-    <section className="editorSection">
+    <section className="editorSection" id="season-details">
       <h2>Chapters of the same story</h2>
       <p className="muted">
         Create a season or part, then keep its score, progress and feelings in
@@ -42,6 +48,24 @@ export function InstallmentManager({ entry }: { entry: ArchiveEntry }) {
             [
               ["name", "ชื่อซีซัน / ภาค", part?.name ?? "", "text"],
               [
+                "originalTitle",
+                "ชื่อดั้งเดิมของซีซัน / ภาค",
+                part?.originalTitle ?? "",
+                "text",
+              ],
+              [
+                "viewingCount",
+                "จำนวนรอบที่ดูจบทั้งหมด (แยกจากรีวิว)",
+                part?.viewingCount ?? 0,
+                "number",
+              ],
+              [
+                "runtimeMinutes",
+                "ความยาวต่อตอน (นาที)",
+                part?.runtimeMinutes ?? "",
+                "number",
+              ],
+              [
                 "position",
                 "ลำดับภาค",
                 part?.position ?? (parts.at(-1)?.position ?? 0) + 1,
@@ -66,13 +90,19 @@ export function InstallmentManager({ entry }: { entry: ArchiveEntry }) {
                 type={type}
                 defaultValue={value}
                 required={name === "name" || name === "position"}
-                min={type === "number" ? 1 : undefined}
+                min={
+                  type === "number"
+                    ? name === "viewingCount"
+                      ? 0
+                      : 1
+                    : undefined
+                }
                 max={
                   name === "position"
                     ? 1000
                     : name === "releaseYear"
                       ? 2200
-                      : name === "totalEpisodes"
+                      : name === "totalEpisodes" || name === "viewingCount"
                         ? 100000
                         : undefined
                 }

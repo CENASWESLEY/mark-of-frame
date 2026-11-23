@@ -4,8 +4,14 @@ import { transaction } from "@/infrastructure/database/connection";
 import {
   insertTitleRecord,
   readArchive,
+  readTitle,
+  updateTitle,
 } from "@/modules/catalog/server/title-store";
-import { insertInstallment } from "@/modules/catalog/server/installment-store";
+import {
+  insertInstallment,
+  saveInstallment,
+} from "@/modules/catalog/server/installment-store";
+import { refreshCatalogMetadata } from "@/modules/catalog/domain/metadata-refresh";
 import {
   organizedArchive,
   type SeriesOrganization,
@@ -39,6 +45,7 @@ export function readBackupInventory(database: DatabaseSync): BackupInventory {
 export function mergeBackup(
   database: DatabaseSync,
   backup: ArchiveBackup,
+  refreshMetadata = false,
 ): ImportSummary {
   return transaction(database, () => {
     const inventory = readBackupInventory(database);
@@ -50,6 +57,14 @@ export function mergeBackup(
       if (!titles.has(entry.title.id)) {
         insertTitleRecord(database, entry.title);
         titles.add(entry.title.id);
+      } else if (refreshMetadata) {
+        const current = readTitle(database, entry.title.id);
+        if (!current)
+          throw new Error("Title disappeared during metadata import.");
+        const updated = refreshCatalogMetadata(current, entry);
+        updateTitle(database, entry.title.id, updated.title);
+        for (const part of updated.installments ?? [])
+          saveInstallment(database, part, part.id);
       }
       for (const part of entry.installments) {
         if (!parts.has(part.id)) {

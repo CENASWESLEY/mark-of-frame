@@ -24,6 +24,9 @@ export function readInstallments(database: DatabaseSync): Installment[] {
         backdropUrl: row.backdrop_url,
         synopsis: row.synopsis,
         totalEpisodes: row.total_episodes,
+        originalTitle: row.original_title,
+        runtimeMinutes: row.runtime_minutes,
+        viewingCount: row.viewing_count,
       }),
     );
 }
@@ -33,7 +36,7 @@ export function insertInstallment(
 ): void {
   database
     .prepare(
-      "INSERT INTO installments (id,title_id,name,position,release_year,cover_url,backdrop_url,synopsis,total_episodes) VALUES (?,?,?,?,?,?,?,?,?)",
+      "INSERT INTO installments (id,title_id,name,position,release_year,cover_url,backdrop_url,synopsis,total_episodes,original_title,runtime_minutes,viewing_count) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
     )
     .run(
       part.id,
@@ -45,6 +48,9 @@ export function insertInstallment(
       part.backdropUrl,
       part.synopsis,
       part.totalEpisodes,
+      part.originalTitle ?? "",
+      part.runtimeMinutes ?? null,
+      part.viewingCount ?? 0,
     );
 }
 export function saveInstallment(
@@ -82,7 +88,7 @@ export function saveInstallment(
       throw new Error("จำนวนตอนน้อยกว่าความคืบหน้าที่บันทึกไว้");
     const result = database
       .prepare(
-        "UPDATE installments SET name=?,position=?,release_year=?,cover_url=?,backdrop_url=?,synopsis=?,total_episodes=? WHERE id=? AND title_id=?",
+        "UPDATE installments SET name=?,position=?,release_year=?,cover_url=?,backdrop_url=?,synopsis=?,total_episodes=?,original_title=?,runtime_minutes=?,viewing_count=COALESCE(?,viewing_count) WHERE id=? AND title_id=?",
       )
       .run(
         input.name,
@@ -92,6 +98,9 @@ export function saveInstallment(
         input.backdropUrl,
         input.synopsis,
         input.totalEpisodes,
+        input.originalTitle ?? "",
+        input.runtimeMinutes ?? null,
+        input.viewingCount ?? null,
         id,
         input.titleId,
       );

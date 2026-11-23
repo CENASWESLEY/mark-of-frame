@@ -1,4 +1,5 @@
 import type { ArchiveEntry } from "@/modules/catalog/domain/archive-entry";
+import { refreshCatalogMetadata } from "@/modules/catalog/domain/metadata-refresh";
 import type { TitleInput } from "@/modules/catalog/domain/title";
 import { isEpisodic } from "@/modules/catalog/domain/title";
 import {
@@ -77,11 +78,16 @@ export class BrowserArchive {
           )
         )
           throw new Error("จำนวนตอนใหม่น้อยกว่าความคืบหน้าที่บันทึกไว้");
-        existing.title = { ...existing.title, ...input };
+        existing.title = {
+          ...existing.title,
+          ...input,
+          viewingCount: input.viewingCount ?? existing.title.viewingCount,
+        };
       } else
         entries.push({
           title: {
             ...input,
+            viewingCount: input.viewingCount ?? 0,
             id,
             isDemo: false,
             createdAt: new Date().toISOString(),
@@ -128,7 +134,7 @@ export class BrowserArchive {
       round.updatedAt = new Date().toISOString();
     });
   }
-  merge(backup: ArchiveBackup) {
+  merge(backup: ArchiveBackup, refreshMetadata = false) {
     const validated = archiveBackupSchema.parse(backup);
     return this.commit((entries) => {
       const summary = inspectBackup(validated, inventoryOf(entries));
@@ -142,6 +148,8 @@ export class BrowserArchive {
         if (!entry) {
           entry = { title: incoming.title, rounds: [], installments: [] };
           entries.push(entry);
+        } else if (refreshMetadata) {
+          Object.assign(entry, refreshCatalogMetadata(entry, incoming));
         }
         entry.installments ??= [];
         for (const part of incoming.installments) {
@@ -181,10 +189,14 @@ export class BrowserArchive {
         throw new Error("ลำดับภาคนี้มีอยู่แล้ว");
       const existing = entry.installments.find((part) => part.id === id);
       if (id && !existing) throw new Error("ไม่พบภาคนี้");
-      if (existing) Object.assign(existing, validated);
+      if (existing)
+        Object.assign(existing, validated, {
+          viewingCount: validated.viewingCount ?? existing.viewingCount,
+        });
       else
         entry.installments.push({
           ...validated,
+          viewingCount: validated.viewingCount ?? 0,
           id: id ?? crypto.randomUUID(),
         });
       return existing?.id ?? entry.installments.at(-1)!.id;

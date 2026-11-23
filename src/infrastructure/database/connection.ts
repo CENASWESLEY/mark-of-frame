@@ -23,6 +23,7 @@ export function openDatabase(filename: string): DatabaseSync {
           .get(migration.version)
       ) {
         database.exec(migration.sql);
+        if ("after" in migration) migration.after(database);
         database
           .prepare("INSERT INTO schema_migrations (version) VALUES (?)")
           .run(migration.version);

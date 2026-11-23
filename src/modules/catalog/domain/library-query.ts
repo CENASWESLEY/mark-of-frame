@@ -50,10 +50,10 @@ export function groupLibrary(
 }
 
 /** Search/filter/order policies are shared by callers and tests, independent of UI. */
-export function queryLibrary(
-  entries: readonly ArchiveEntry[],
+export function queryLibrary<T extends ArchiveEntry>(
+  entries: readonly T[],
   query: LibraryQuery = {},
-): ArchiveEntry[] {
+): T[] {
   const search = query.search?.trim().toLocaleLowerCase("th") ?? "";
   const summaries = entries.map((entry) => ({
     entry,

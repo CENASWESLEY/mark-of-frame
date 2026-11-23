@@ -42,3 +42,6 @@
 .backdrop .placeholder {
   opacity: 0.18;
 }
+.wide img {
+  object-fit: contain;
+}

@@ -16,6 +16,7 @@ export function RoundEditor({
   installmentId,
   season,
   feelingsOnly,
+  onSaved,
 }: {
   titleId: string;
   round?: WatchRound;
@@ -24,9 +25,14 @@ export function RoundEditor({
   installmentId?: string;
   season?: number;
   feelingsOnly?: boolean;
+  onSaved?: () => void;
 }) {
   const [state, action, pending] = useActionState(
-    saveRoundAction,
+    async (previous: typeof initialActionState, form: FormData) => {
+      const result = await saveRoundAction(previous, form);
+      if (result.status === "success") onSaved?.();
+      return result;
+    },
     initialActionState,
   );
   const [values, setValues] = useState<Record<string, string>>({

@@ -35,12 +35,14 @@ export function BackupSettings({
     mode: "merge" | "organize";
   } | null>(null);
   const [error, setError] = useState("");
+  const [refreshMetadata, setRefreshMetadata] = useState(false);
   const [checking, setChecking] = useState(false);
   const version = useRef(0),
     input = useRef<HTMLInputElement>(null);
   const [state, action, pending] = useActionState<BackupActionState, FormData>(
     async (previous) => {
       const payload = new FormData();
+      if (refreshMetadata) payload.set("refreshMetadata", "on");
       if (file)
         payload.set(
           preview?.mode === "organize" ? "organization" : "backup",
@@ -74,6 +76,12 @@ export function BackupSettings({
     setChecking(true);
     try {
       const raw: unknown = JSON.parse(await next.text());
+      setRefreshMetadata(
+        typeof raw === "object" &&
+          raw !== null &&
+          "metadataRefresh" in raw &&
+          raw.metadataRefresh === true,
+      );
       if (request !== version.current) return;
       const reviewed = reviewArchiveImport(raw, inventory);
       setFile(next);
@@ -151,8 +159,8 @@ export function BackupSettings({
             <h2>Bring your memories home.</h2>
             <p>
               Choose a backup and review what it contains before importing. New
-              titles and viewings are merged into your archive; existing records
-              are kept exactly as they are.
+              titles and viewings are merged into your archive. You can also
+              refresh catalog details while keeping your personal records.
             </p>
           </div>
         </div>
@@ -177,6 +185,24 @@ export function BackupSettings({
             <p className="muted small" role="status">
               Reading and validating your backup…
             </p>
+          )}
+          {preview?.mode === "merge" && (
+            <label className={styles.refreshMetadata}>
+              <input
+                type="checkbox"
+                checked={refreshMetadata}
+                onChange={(event) => setRefreshMetadata(event.target.checked)}
+                disabled={pending}
+              />
+              <span>
+                Refresh title and season metadata from this file
+                <small>
+                  Update covers, original names, release years and synopses.
+                  Your existing scores, viewing counts and personal memories
+                  stay as they are.
+                </small>
+              </span>
+            </label>
           )}
           {error && (
             <p className="feedback errorText" role="alert">
@@ -223,7 +249,9 @@ export function BackupSettings({
               <p className={styles.note}>
                 {preview.mode === "organize"
                   ? "This file separates seasons and cleans imported notes for this exact collection. Original text remains in the JSON source archive. If your records have changed since this file was prepared, nothing is applied."
-                  : "Merge by record identity. Nothing is removed or overwritten. The entire import is rolled back if any record cannot be saved."}
+                  : refreshMetadata
+                    ? "Refresh catalog details by record identity. Existing scores, viewing counts, dates and feelings are preserved. The entire import rolls back if any record cannot be saved."
+                    : "Merge by record identity. Nothing is removed or overwritten. The entire import is rolled back if any record cannot be saved."}
               </p>
             </div>
           )}

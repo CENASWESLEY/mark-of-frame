@@ -1,4 +1,5 @@
 import type { ArchiveEntry } from "./archive-entry";
+import { legacyViewingCount } from "./viewing-count";
 import {
   latestRound,
   completedViewings,
@@ -59,12 +60,15 @@ export function currentViewing(entry: ArchiveEntry) {
   );
 }
 export function storyViewings(entry: ArchiveEntry): number {
-  if (!entry.installments?.length) return completedViewings(entry.rounds);
-  const overall = installmentRounds(entry);
-  if (overall.length) return completedViewings(overall);
-  return Math.min(
-    ...entry.installments.map((part) =>
-      completedViewings(installmentRounds(entry, part.id)),
-    ),
+  return (
+    entry.title.viewingCount ??
+    legacyViewingCount(
+      entry.rounds,
+      (entry.installments ?? []).map((part) => part.id),
+    )
   );
+}
+export function partViewings(entry: ArchiveEntry, id: string): number {
+  const part = entry.installments?.find((part) => part.id === id);
+  return part?.viewingCount ?? completedViewings(installmentRounds(entry, id));
 }

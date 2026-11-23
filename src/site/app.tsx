@@ -167,7 +167,11 @@ export function SiteApp() {
             description="A few careful details make a story easier to find. Update its metadata here; every viewing and personal memory stays with it."
           />
           <TitleEditor key={entry.title.id} title={entry.title} />
-          <InstallmentManager entry={entry} />
+          <InstallmentManager
+            key={location.searchParams.get("part")}
+            entry={entry}
+            initialPartId={location.searchParams.get("part")}
+          />
         </>
       ) : (
         <TitleDetail

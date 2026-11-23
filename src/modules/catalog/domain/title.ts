@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { viewingCountSchema } from "./viewing-count";
 
 export const categories = [
   { id: "film", label: "ภาพยนตร์" },
@@ -76,6 +77,7 @@ export const titleInputSchema = z.object({
   synopsis: z.string().trim().max(5000),
   runtimeMinutes: optionalInteger(10000),
   totalEpisodes: optionalInteger(100000),
+  viewingCount: viewingCountSchema,
 });
 
 export type TitleInput = z.output<typeof titleInputSchema>;

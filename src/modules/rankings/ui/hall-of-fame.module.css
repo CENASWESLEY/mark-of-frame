@@ -81,7 +81,7 @@
   gap: clamp(30px, 5vw, 100px);
   align-items: center;
   overflow: auto;
-  overscroll-behavior: contain;
+  overscroll-behavior: auto;
   padding: 4px 0;
 }
 .heroContent {

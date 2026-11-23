@@ -2,6 +2,7 @@
 
 import { useDeferredValue, useState, useRef, useMemo } from "react";
 import { categoryPositions } from "@/modules/rankings/domain/rankings";
+import { libraryEntries } from "../domain/library-entries";
 import Link from "next/link";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { categories } from "../domain/title";
@@ -23,7 +24,8 @@ import type { ArchiveEntry } from "@/modules/catalog/domain/archive-entry";
 import styles from "./library.module.css";
 
 export function Library({ entries }: { entries: ArchiveEntry[] }) {
-  const positions = useMemo(() => categoryPositions(entries), [entries]);
+  const items = useMemo(() => libraryEntries(entries), [entries]);
+  const positions = useMemo(() => categoryPositions(items), [items]);
   const [search, setSearch] = useState("");
   const query = useDeferredValue(search);
   const [category, setCategory] = useState("");
@@ -42,8 +44,8 @@ export function Library({ entries }: { entries: ArchiveEntry[] }) {
     setFiltersOpen(false);
     toggleRef.current?.focus();
   };
-  const { genres, countries } = libraryFacets(entries);
-  const filtered = queryLibrary(entries, {
+  const { genres, countries } = libraryFacets(items);
+  const filtered = queryLibrary(items, {
     search: query,
     category,
     genre,
@@ -70,7 +72,8 @@ export function Library({ entries }: { entries: ArchiveEntry[] }) {
           Filters &amp; sort
         </button>
         <p className={styles.result} role="status">
-          พบ {filtered.length} เรื่อง จากทั้งหมด {entries.length} เรื่อง
+          พบ {filtered.length} รายการ จากทั้งหมด {items.length} รายการ · แยกซีซั่น /
+          ภาค
         </p>
         <ViewSwitch value={view} onChange={setView} />
       </div>
@@ -255,10 +258,14 @@ export function Library({ entries }: { entries: ArchiveEntry[] }) {
             {filtered.map((entry) =>
               view === "grid" ? (
                 <div key={entry.title.id}>
-                  <TitleCard entry={entry} />
+                  <TitleCard
+                    entry={entry}
+                    position={positions.get(entry.title.id) ?? null}
+                    href={`/titles/${entry.storyId}${entry.partId ? `?part=${entry.partId}` : ""}`}
+                  />
                   <Link
                     className="quietLink small"
-                    href={`/titles/${entry.title.id}/edit`}
+                    href={`/titles/${entry.storyId}/edit${entry.partId ? `?part=${entry.partId}#season-details` : ""}`}
                   >
                     Edit details
                   </Link>
@@ -269,6 +276,8 @@ export function Library({ entries }: { entries: ArchiveEntry[] }) {
                   entry={entry}
                   position={positions.get(entry.title.id) ?? null}
                   editable
+                  href={`/titles/${entry.storyId}${entry.partId ? `?part=${entry.partId}` : ""}`}
+                  editHref={`/titles/${entry.storyId}/edit${entry.partId ? `?part=${entry.partId}#season-details` : ""}`}
                 />
               ),
             )}

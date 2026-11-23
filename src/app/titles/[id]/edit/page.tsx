@@ -7,8 +7,10 @@ import { InstallmentManager } from "@/modules/catalog/ui/installment-manager";
 export const dynamic = "force-dynamic";
 export default async function EditTitlePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ part?: string }>;
 }) {
   const entry = loadTitle((await params).id);
   if (!entry) notFound();
@@ -19,7 +21,10 @@ export default async function EditTitlePage({
         description={`Refine the details of ${entry.title.name}. Every viewing and personal memory stays safely in its own chapter.`}
       />
       <TitleEditor title={entry.title} />
-      <InstallmentManager entry={entry} />
+      <InstallmentManager
+        entry={entry}
+        initialPartId={(await searchParams).part}
+      />
     </>
   );
 }

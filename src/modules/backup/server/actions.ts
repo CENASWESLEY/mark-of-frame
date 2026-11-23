@@ -75,7 +75,11 @@ export async function importBackupAction(
     };
   let summary: ImportSummary;
   try {
-    summary = mergeBackup(getDatabase(), parsed.data);
+    summary = mergeBackup(
+      getDatabase(),
+      parsed.data,
+      form.get("refreshMetadata") === "on",
+    );
   } catch (error) {
     if (error instanceof WatchRuleError)
       return {
@@ -91,7 +95,7 @@ export async function importBackupAction(
   revalidatePath("/", "layout");
   return {
     status: "success",
-    message: `Imported ${summary.titlesAdded} titles and ${summary.roundsAdded} viewings. Existing records were kept.`,
+    message: `Imported ${summary.titlesAdded} titles and ${summary.roundsAdded} viewings.${form.get("refreshMetadata") === "on" ? " Metadata refreshed; personal scores, counts and memories were kept." : " Existing records were kept."}`,
     summary,
   };
 }

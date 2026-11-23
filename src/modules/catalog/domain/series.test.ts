@@ -14,13 +14,17 @@ import type { ArchiveEntry } from "./archive-entry";
 import { buildYearReview } from "@/modules/insights/domain/year-review";
 
 function fixture(): ArchiveEntry {
-  const entry = structuredClone(sampleBackup().entries[0]!);
+  const entry: ArchiveEntry = structuredClone(sampleBackup().entries[0]!);
   entry.rounds = [];
+  delete entry.title.viewingCount;
   entry.installments = [2, 1, 3].map((position) => ({
     id: randomUUID(),
     titleId: entry.title.id,
     name: `Season ${position}`,
     position,
+    viewingCount: 0,
+    originalTitle: "",
+    runtimeMinutes: null,
     releaseYear: 2020,
     coverUrl: "",
     backdropUrl: "",

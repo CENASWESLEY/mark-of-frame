@@ -30,6 +30,7 @@ const titleRowSchema = z.object({
   total_episodes: z.number().nullable(),
   is_demo: z.number(),
   created_at: z.string(),
+  viewing_count: z.number().nullable(),
 });
 const roundRowSchema = z.object({
   id: z.string(),
@@ -65,6 +66,7 @@ function decodeTitle(row: Row): Title {
     totalEpisodes: title.total_episodes,
     isDemo: title.is_demo === 1,
     createdAt: title.created_at,
+    viewingCount: title.viewing_count ?? 0,
   };
 }
 
@@ -150,7 +152,7 @@ export function createTitle(
 export function insertTitleRecord(database: DatabaseSync, input: Title): void {
   database
     .prepare(
-      `INSERT INTO titles (id,name,original_title,category,release_year,genres,country,language,cover_url,backdrop_url,synopsis,runtime_minutes,total_episodes,is_demo,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      `INSERT INTO titles (id,name,original_title,category,release_year,genres,country,language,cover_url,backdrop_url,synopsis,runtime_minutes,total_episodes,is_demo,created_at,viewing_count) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     )
     .run(
       input.id,
@@ -168,6 +170,7 @@ export function insertTitleRecord(database: DatabaseSync, input: Title): void {
       input.totalEpisodes,
       Number(input.isDemo),
       input.createdAt,
+      input.viewingCount ?? 0,
     );
 }
 
@@ -190,7 +193,7 @@ export function updateTitle(
       );
     const result = database
       .prepare(
-        `UPDATE titles SET name=?,original_title=?,category=?,release_year=?,genres=?,country=?,language=?,cover_url=?,backdrop_url=?,synopsis=?,runtime_minutes=?,total_episodes=? WHERE id=?`,
+        `UPDATE titles SET name=?,original_title=?,category=?,release_year=?,genres=?,country=?,language=?,cover_url=?,backdrop_url=?,synopsis=?,runtime_minutes=?,total_episodes=?,viewing_count=COALESCE(?,viewing_count) WHERE id=?`,
       )
       .run(
         input.name,
@@ -205,6 +208,7 @@ export function updateTitle(
         input.synopsis,
         input.runtimeMinutes,
         input.totalEpisodes,
+        input.viewingCount ?? null,
         id,
       );
     if (!result.changes) throw new TitleRuleError("ไม่พบเรื่องนี้");

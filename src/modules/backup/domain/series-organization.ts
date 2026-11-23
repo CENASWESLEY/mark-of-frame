@@ -81,9 +81,13 @@ function state(entries: ArchiveEntry[]) {
     createArchiveBackup(entries, "2000-01-01T00:00:00.000Z")
       .entries.map((entry) => ({
         ...entry,
-        installments: [...entry.installments].sort((a, b) =>
-          a.id.localeCompare(b.id),
-        ),
+        installments: [...entry.installments]
+          .map((part) => ({
+            ...part,
+            originalTitle: part.originalTitle ?? "",
+            runtimeMinutes: part.runtimeMinutes ?? null,
+          }))
+          .sort((a, b) => a.id.localeCompare(b.id)),
         rounds: [...entry.rounds].sort((a, b) => a.id.localeCompare(b.id)),
       }))
       .sort((a, b) => a.title.id.localeCompare(b.title.id)),

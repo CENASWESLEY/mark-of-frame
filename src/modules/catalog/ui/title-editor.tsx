@@ -34,6 +34,7 @@ export function TitleEditor({
     coverUrl: title?.coverUrl ?? "",
     backdropUrl: title?.backdropUrl ?? "",
     synopsis: title?.synopsis ?? "",
+    viewingCount: String(title?.viewingCount ?? 0),
   });
   const common = (name: string) => ({
     id: name,
@@ -78,6 +79,21 @@ export function TitleEditor({
             min={1}
             max={2200}
             placeholder="2026"
+          />
+        </FormField>
+        <FormField
+          name="viewingCount"
+          label="จำนวนรอบที่ดูจบทั้งหมด"
+          hint="รวมครั้งแรกและดูซ้ำ · แก้ได้เองโดยไม่ขึ้นกับจำนวนรีวิว"
+          state={state}
+        >
+          <input
+            {...common("viewingCount")}
+            type="number"
+            min={0}
+            max={100000}
+            step={1}
+            required
           />
         </FormField>
         <FormField

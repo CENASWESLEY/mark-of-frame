@@ -16,8 +16,11 @@ export function Artwork({
   eager?: boolean;
 }) {
   const [failedSource, setFailedSource] = useState<string | null>(null);
+  const [wideSource, setWideSource] = useState<string | null>(null);
   return (
-    <span className={`${styles.artwork} ${backdrop ? styles.backdrop : ""}`}>
+    <span
+      className={`${styles.artwork} ${backdrop ? styles.backdrop : wideSource === src ? styles.wide : ""}`}
+    >
       {src && failedSource !== src ? (
         // User-supplied cover hosts vary; a regular image avoids a server-side arbitrary-host image proxy.
         // eslint-disable-next-line @next/next/no-img-element
@@ -25,6 +28,14 @@ export function Artwork({
           src={src}
           alt={backdrop ? "" : `ปก ${title}`}
           loading={eager ? "eager" : "lazy"}
+          onLoad={(event) => {
+            // Official arc key visuals can be wider than a poster; preserve their complete artwork.
+            if (
+              event.currentTarget.naturalWidth >
+              event.currentTarget.naturalHeight * 1.2
+            )
+              setWideSource(src);
+          }}
           onError={() => setFailedSource(src)}
         />
       ) : (

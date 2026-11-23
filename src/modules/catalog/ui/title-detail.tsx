@@ -8,13 +8,18 @@ import { formatScore, rankForScore } from "@/modules/rankings/domain/score";
 import type { ArchiveEntry } from "@/modules/catalog/domain/archive-entry";
 import {
   compareRoundsNewestFirst,
-  completedViewings,
   latestRound,
   statusLabel,
 } from "@/modules/watching/domain/watch-round";
-import { WatchEditor } from "@/modules/watching/ui/watch-editor";
+import { ReviewDialog } from "@/modules/watching/ui/review-dialog";
 import styles from "./title-detail.module.css";
-import { activePart, entryScore, installmentRounds } from "../domain/series";
+import {
+  activePart,
+  entryScore,
+  installmentRounds,
+  partViewings,
+  storyViewings,
+} from "../domain/series";
 import { SeriesChain } from "./series-chain";
 
 export function TitleDetail({
@@ -33,6 +38,8 @@ export function TitleDetail({
         coverUrl: part.coverUrl || entry.title.coverUrl,
         totalEpisodes: part.totalEpisodes,
         synopsis: part.synopsis || entry.title.synopsis,
+        originalTitle: part.originalTitle || entry.title.originalTitle,
+        runtimeMinutes: part.runtimeMinutes ?? entry.title.runtimeMinutes,
       }
     : entry.title;
   const rounds = entry.installments?.length
@@ -43,7 +50,7 @@ export function TitleDetail({
     !part && entry.installments?.length
       ? entryScore(entry)
       : (latest?.score ?? null);
-  const count = completedViewings(rounds);
+  const count = part ? partViewings(entry, part.id) : storyViewings(entry);
   const sorted = [...rounds].sort(compareRoundsNewestFirst);
   return (
     <>
@@ -51,7 +58,10 @@ export function TitleDetail({
         <Link href="/library" className="quietLink">
           กลับสู่คลังเรื่อง
         </Link>
-        <Link href={`/titles/${title.id}/edit`} className="quietLink">
+        <Link
+          href={`/titles/${title.id}/edit${part ? `?part=${part.id}#season-details` : ""}`}
+          className="quietLink"
+        >
           <Pencil size={15} aria-hidden="true" />
           แก้ไขข้อมูลเรื่อง
         </Link>
@@ -70,7 +80,9 @@ export function TitleDetail({
             {[
               categoryLabel(title.category),
               title.releaseYear,
-              title.runtimeMinutes ? `${title.runtimeMinutes} นาที` : null,
+              title.runtimeMinutes
+                ? `${title.runtimeMinutes} ${isEpisodic(title.category) ? "นาที/ตอน" : "นาที"}`
+                : null,
               title.totalEpisodes ? `${title.totalEpisodes} ตอน` : null,
               title.country,
               title.language,
@@ -121,6 +133,14 @@ export function TitleDetail({
                   {formatDate(round.finishedOn ?? round.startedOn)}
                 </span>
                 <p>{round.note}</p>
+                <ReviewDialog
+                  titleId={title.id}
+                  round={round}
+                  totalEpisodes={entry.title.totalEpisodes}
+                  episodic={isEpisodic(title.category)}
+                  feelingsOnly
+                  label="แก้ไขความรู้สึกภาพรวม"
+                />
               </article>
             ))}
         </section>
@@ -156,22 +176,35 @@ export function TitleDetail({
               )}
             </div>
             <p>{round.note || "ยังไม่ได้เขียนความรู้สึก"}</p>
-            <span className={styles.roundScore}>
-              {formatScore(round.score)}
-            </span>
+            <div className={styles.roundActions}>
+              <span className={styles.roundScore}>
+                {formatScore(round.score)}
+              </span>
+              <ReviewDialog
+                titleId={title.id}
+                round={round}
+                totalEpisodes={title.totalEpisodes}
+                episodic={isEpisodic(title.category)}
+                installmentId={part?.id}
+                season={part?.position}
+                feelingsOnly={!part && Boolean(entry.installments?.length)}
+                label={`แก้ไขรีวิว ${formatDate(round.finishedOn ?? round.startedOn)} ${round.id === latest?.id ? "รอบล่าสุด" : "รอบก่อน"}`}
+              />
+            </div>
           </article>
         ))}
       </section>
-      <WatchEditor
-        feelingsOnly={!part && Boolean(entry.installments?.length)}
-        key={part?.id ?? title.id}
-        installmentId={part?.id}
-        season={part?.position}
-        titleId={title.id}
-        latest={latest}
-        totalEpisodes={title.totalEpisodes}
-        episodic={isEpisodic(title.category)}
-      />
+      <div className={styles.addReview}>
+        <ReviewDialog
+          feelingsOnly={!part && Boolean(entry.installments?.length)}
+          key={part?.id ?? title.id}
+          installmentId={part?.id}
+          season={part?.position}
+          titleId={title.id}
+          totalEpisodes={title.totalEpisodes}
+          episodic={isEpisodic(title.category)}
+        />
+      </div>
     </>
   );
 }

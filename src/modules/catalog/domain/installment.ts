@@ -9,6 +9,9 @@ export const installmentInputSchema = z.object({
   backdropUrl: titleInputSchema.shape.backdropUrl,
   synopsis: titleInputSchema.shape.synopsis,
   totalEpisodes: titleInputSchema.shape.totalEpisodes,
+  originalTitle: titleInputSchema.shape.originalTitle.optional(),
+  runtimeMinutes: titleInputSchema.shape.runtimeMinutes.optional(),
+  viewingCount: titleInputSchema.shape.viewingCount,
 });
 export type InstallmentInput = z.output<typeof installmentInputSchema>;
 export type Installment = InstallmentInput & { id: string };

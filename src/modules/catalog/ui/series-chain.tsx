@@ -1,10 +1,11 @@
 import Link from "next/link";
 import type { ArchiveEntry } from "../domain/archive-entry";
-import { installmentRounds, orderedInstallments } from "../domain/series";
 import {
-  completedViewings,
-  latestRound,
-} from "@/modules/watching/domain/watch-round";
+  installmentRounds,
+  orderedInstallments,
+  partViewings,
+} from "../domain/series";
+import { latestRound } from "@/modules/watching/domain/watch-round";
 import { formatScore, rankForScore } from "@/modules/rankings/domain/score";
 import { Artwork } from "@/shared/ui/artwork";
 import { RankBadge } from "@/shared/ui/rank-badge";
@@ -57,7 +58,7 @@ export function SeriesChain({
               </span>
               <div className={styles.chainBottom}>
                 <span className={styles.chainCount}>
-                  ดูจบทั้งหมด {completedViewings(rounds)} รอบ
+                  ดูจบทั้งหมด {partViewings(entry, part.id)} รอบ
                 </span>
                 <RankBadge rank={rankForScore(score)} size="small" />
                 <span className={styles.chainScore}>

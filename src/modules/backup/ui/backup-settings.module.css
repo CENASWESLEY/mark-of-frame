@@ -164,3 +164,25 @@
     align-items: start;
   }
 }
+.refreshMetadata {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 20px;
+  color: var(--text);
+  font-size: 14px;
+}
+.refreshMetadata input {
+  accent-color: var(--gold);
+  width: 18px;
+  height: 18px;
+  flex: none;
+  margin-top: 3px;
+}
+.refreshMetadata small {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+  margin-top: 6px;
+}

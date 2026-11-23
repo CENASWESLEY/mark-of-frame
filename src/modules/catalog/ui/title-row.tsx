@@ -15,10 +15,14 @@ export function TitleRow({
   entry,
   position,
   editable = false,
+  href,
+  editHref,
 }: {
   entry: ArchiveEntry;
   position?: number | null;
   editable?: boolean;
+  href?: string;
+  editHref?: string;
 }) {
   const { title, rounds } = entry;
   const latest = currentViewing(entry) ?? latestRound(rounds),
@@ -39,7 +43,7 @@ export function TitleRow({
         </span>
       )}
       <Link
-        href={`/titles/${title.id}`}
+        href={href ?? `/titles/${title.id}`}
         className={styles.cover}
         aria-label={`Open ${title.name}`}
       >
@@ -47,7 +51,7 @@ export function TitleRow({
       </Link>
       <div className={styles.details}>
         <h3>
-          <Link href={`/titles/${title.id}`}>{title.name}</Link>
+          <Link href={href ?? `/titles/${title.id}`}>{title.name}</Link>
         </h3>
         <p className={styles.metadata}>
           {[
@@ -82,7 +86,7 @@ export function TitleRow({
       {editable && (
         <Link
           className={styles.edit}
-          href={`/titles/${title.id}/edit`}
+          href={editHref ?? `/titles/${title.id}/edit`}
           aria-label={`Edit ${title.name}`}
         >
           <Pencil size={16} aria-hidden="true" />

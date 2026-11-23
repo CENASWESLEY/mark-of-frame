@@ -1,3 +1,6 @@
+import type { DatabaseSync } from "node:sqlite";
+import { legacyViewingCount } from "@/modules/catalog/domain/viewing-count";
+
 export const migrations = [
   {
     version: 1,
@@ -56,5 +59,47 @@ export const migrations = [
     ALTER TABLE watch_rounds ADD COLUMN source_note TEXT NOT NULL DEFAULT '';
     CREATE INDEX watch_rounds_installment ON watch_rounds(installment_id);
   `,
+  },
+  {
+    version: 3,
+    sql: `
+      ALTER TABLE titles ADD COLUMN viewing_count INTEGER CHECK(viewing_count BETWEEN 0 AND 100000);
+      ALTER TABLE installments ADD COLUMN viewing_count INTEGER CHECK(viewing_count BETWEEN 0 AND 100000);
+      ALTER TABLE installments ADD COLUMN original_title TEXT NOT NULL DEFAULT '';
+      ALTER TABLE installments ADD COLUMN runtime_minutes INTEGER CHECK(runtime_minutes > 0);
+    `,
+    after(database: DatabaseSync) {
+      const parts = database
+        .prepare("SELECT id,title_id FROM installments")
+        .all();
+      const rounds = database
+        .prepare("SELECT title_id,installment_id,status FROM watch_rounds")
+        .all()
+        .map((row) => ({
+          titleId: String(row.title_id),
+          installmentId:
+            row.installment_id === null ? null : String(row.installment_id),
+          status: String(row.status),
+        }));
+      for (const title of database.prepare("SELECT id FROM titles").all()) {
+        const ownParts = parts.filter((part) => part.title_id === title.id);
+        database.prepare("UPDATE titles SET viewing_count=? WHERE id=?").run(
+          legacyViewingCount(
+            rounds.filter((round) => round.titleId === title.id),
+            ownParts.map((part) => String(part.id)),
+          ),
+          String(title.id),
+        );
+      }
+      for (const part of parts)
+        database
+          .prepare("UPDATE installments SET viewing_count=? WHERE id=?")
+          .run(
+            legacyViewingCount(
+              rounds.filter((round) => round.installmentId === part.id),
+            ),
+            String(part.id),
+          );
+    },
   },
 ] as const;

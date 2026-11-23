@@ -150,12 +150,12 @@ export async function importBackupAction(
         message: "This backup is not compatible. No data was changed.",
       };
     const summary = await changeArchive((archive) =>
-      archive.merge(parsed.data),
+      archive.merge(parsed.data, form.get("refreshMetadata") === "on"),
     );
     return {
       status: "success",
       summary,
-      message: `Imported ${summary.titlesAdded} titles and ${summary.roundsAdded} viewings. Existing records were kept.`,
+      message: `Imported ${summary.titlesAdded} titles and ${summary.roundsAdded} viewings.${form.get("refreshMetadata") === "on" ? " Metadata refreshed; personal scores, counts and memories were kept." : " Existing records were kept."}`,
     };
   } catch (error) {
     return failure(error);

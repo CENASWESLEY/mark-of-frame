@@ -14,9 +14,11 @@ export function TitleCard({
   position,
   selected,
   onSelect,
+  href,
 }: {
   entry: ArchiveEntry;
-  position?: number;
+  position?: number | null;
+  href?: string;
   selected?: boolean;
   onSelect?: () => void;
 }) {
@@ -43,8 +45,11 @@ export function TitleCard({
       </span>
       <span className={styles.caption}>
         {position !== undefined && (
-          <span className={styles.number}>
-            {String(position).padStart(2, "0")}
+          <span
+            className={styles.number}
+            aria-label={position === null ? "ยังไม่มีอันดับ" : `อันดับ ${position}`}
+          >
+            {position === null ? "—" : String(position).padStart(2, "0")}
           </span>
         )}
         <span className={styles.captionBody}>
@@ -69,7 +74,7 @@ export function TitleCard({
       {content}
     </button>
   ) : (
-    <Link className={styles.poster} href={`/titles/${title.id}`}>
+    <Link className={styles.poster} href={href ?? `/titles/${title.id}`}>
       {content}
     </Link>
   );

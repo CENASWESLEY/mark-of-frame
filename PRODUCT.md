@@ -63,3 +63,11 @@ Local durable SQLite storage, cinematic Hall of Frame, searchable/filterable lib
 ## ChatGPT Sites — confirmed 21 November 2026
 
 The user wants this project available in their ChatGPT Sites library, using JSON export/import rather than a hosted database. Publish as a private static Site. Browser data is device/browser-local; never imply account-based sync. Keep the existing local Next.js/SQLite target and its data intact. Site creation starts with an empty archive; samples are labeled and explicitly opt-in.
+
+## Confirmed revision — 23 November 2026
+
+- Library expands series into separate ranked seasons/parts. Each card and list row shows its position within its category, using only that part's latest score. Standalone films and stories remain individual entries. Filters preserve the underlying category positions and ties. The Hall continues to rank whole stories by their existing overall scoring rule.
+- Completed viewing counts are editable integers for a whole story and each installment, independent of review records. Legacy counts are copied once during JSON/SQLite migration; future review creation or editing never changes them. Explicit zero is preserved.
+- Every review box offers its own edit action in a modal dialog; older reviews remain editable. A separate button opens a new memory. Review forms are never permanently expanded on the detail page.
+- Home wheel/touch scrolling must reach the document from artwork and reading regions. A compact showcase may scroll internally on constrained screens, but its edges must allow normal document scroll chaining.
+- JSON import can explicitly refresh title and season metadata: artwork, native names, release years, synopsis, genres, country/language, duration and episode totals. It preserves existing personal scores, viewing dates, feelings, identities and manual viewing counts. Conflicting episode limits reject the entire import atomically.
