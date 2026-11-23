@@ -46,7 +46,7 @@ export function SeriesChain({
             >
               <div className={styles.chainCover}>
                 <Artwork
-                  src={part.coverUrl || entry.title.coverUrl}
+                  src={part.coverUrl}
                   title={part.name}
                 />
               </div>

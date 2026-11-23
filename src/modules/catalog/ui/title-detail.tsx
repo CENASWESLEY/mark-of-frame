@@ -35,7 +35,7 @@ export function TitleDetail({
         ...entry.title,
         name: `${entry.title.name} — ${part.name}`,
         releaseYear: part.releaseYear ?? entry.title.releaseYear,
-        coverUrl: part.coverUrl || entry.title.coverUrl,
+        coverUrl: part.coverUrl,
         totalEpisodes: part.totalEpisodes,
         synopsis: part.synopsis || entry.title.synopsis,
         originalTitle: part.originalTitle || entry.title.originalTitle,
@@ -63,7 +63,7 @@ export function TitleDetail({
           className="quietLink"
         >
           <Pencil size={15} aria-hidden="true" />
-          แก้ไขข้อมูลเรื่อง
+          {part ? "แก้ไขข้อมูลภาคนี้" : "แก้ไขข้อมูลเรื่องรวม"}
         </Link>
       </div>
       <section className={styles.intro}>

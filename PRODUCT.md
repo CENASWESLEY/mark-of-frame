@@ -67,6 +67,7 @@ The user wants this project available in their ChatGPT Sites library, using JSON
 ## Confirmed revision — 23 November 2026
 
 - Library expands series into separate ranked seasons/parts. Each card and list row shows its position within its category, using only that part's latest score. Standalone films and stories remain individual entries. Filters preserve the underlying category positions and ties. The Hall continues to rank whole stories by their existing overall scoring rule.
+- Edit links from a season open only that season's form, with an explicit scope label and a separate whole-story editor. Season posters are independent: missing artwork shows a placeholder, never another season or whole-story poster. The Hall keeps the whole-story cover.
 - Completed viewing counts are editable integers for a whole story and each installment, independent of review records. Legacy counts are copied once during JSON/SQLite migration; future review creation or editing never changes them. Explicit zero is preserved.
 - Every review box offers its own edit action in a modal dialog; older reviews remain editable. A separate button opens a new memory. Review forms are never permanently expanded on the detail page.
 - Home wheel/touch scrolling must reach the document from artwork and reading regions. A compact showcase may scroll internally on constrained screens, but its edges must allow normal document scroll chaining.

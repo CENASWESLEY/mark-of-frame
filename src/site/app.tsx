@@ -7,8 +7,7 @@ import { Library } from "@/modules/catalog/ui/library";
 import { Journal } from "@/modules/journal/ui/journal";
 import { Management } from "@/modules/catalog/ui/management";
 import { TitleDetail } from "@/modules/catalog/ui/title-detail";
-import { TitleEditor } from "@/modules/catalog/ui/title-editor";
-import { InstallmentManager } from "@/modules/catalog/ui/installment-manager";
+import { TitleEditPanel } from "@/modules/catalog/ui/title-edit-panel";
 import { BackupSettings } from "@/modules/backup/ui/backup-settings";
 import { YearReview } from "@/modules/insights/ui/year-review";
 import { YearPicker } from "@/modules/insights/ui/year-picker";
@@ -166,11 +165,9 @@ export function SiteApp() {
             title="Refine the details"
             description="A few careful details make a story easier to find. Update its metadata here; every viewing and personal memory stays with it."
           />
-          <TitleEditor key={entry.title.id} title={entry.title} />
-          <InstallmentManager
-            key={location.searchParams.get("part")}
+          <TitleEditPanel
             entry={entry}
-            initialPartId={location.searchParams.get("part")}
+            selectedPartId={location.searchParams.get("part")}
           />
         </>
       ) : (

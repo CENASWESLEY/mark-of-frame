@@ -22,7 +22,7 @@ export function libraryEntries(
         name: `${entry.title.name} — ${part.name}`,
         originalTitle: part.originalTitle || entry.title.originalTitle,
         releaseYear: part.releaseYear ?? entry.title.releaseYear,
-        coverUrl: part.coverUrl || entry.title.coverUrl,
+        coverUrl: part.coverUrl,
         backdropUrl: part.backdropUrl || entry.title.backdropUrl,
         synopsis: part.synopsis || entry.title.synopsis,
         totalEpisodes: part.totalEpisodes,

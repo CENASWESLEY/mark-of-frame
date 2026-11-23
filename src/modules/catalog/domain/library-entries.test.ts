@@ -9,6 +9,33 @@ import {
 } from "@/modules/rankings/domain/rankings";
 
 describe("Library installment rankings", () => {
+  it("keeps a missing season poster independent from the whole-story poster", () => {
+    const entry = structuredClone(sampleBackup().entries[0]!);
+    entry.title.coverUrl = "https://example.com/whole-story.jpg";
+    entry.installments = [1, 2].map((position) => ({
+      id: randomUUID(),
+      titleId: entry.title.id,
+      name: `Season ${position}`,
+      position,
+      releaseYear: null,
+      coverUrl: position === 1 ? "https://example.com/season-1.jpg" : "",
+      backdropUrl: "",
+      synopsis: "",
+      totalEpisodes: null,
+      originalTitle: "",
+      runtimeMinutes: null,
+      viewingCount: 0,
+    }));
+    expect(libraryEntries([entry]).map((item) => item.title.coverUrl)).toEqual([
+      "https://example.com/season-1.jpg",
+      "",
+    ]);
+    entry.title.coverUrl = "https://example.com/new-whole-story.jpg";
+    expect(libraryEntries([entry]).map((item) => item.title.coverUrl)).toEqual([
+      "https://example.com/season-1.jpg",
+      "",
+    ]);
+  });
   it("ranks parts independently while Hall retains one story and its overall score", () => {
     const entry = structuredClone(sampleBackup().entries[0]!);
     entry.title.category = "anime";

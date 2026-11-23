@@ -5,6 +5,7 @@ import { orderedInstallments } from "../domain/series";
 import { saveInstallmentAction } from "../server/actions";
 import { initialActionState } from "@/shared/lib/action-state";
 import { FormFeedback } from "@/shared/ui/form-field";
+import Link from "next/link";
 
 export function InstallmentManager({
   entry,
@@ -22,10 +23,13 @@ export function InstallmentManager({
   );
   return (
     <section className="editorSection" id="season-details">
-      <h2>Chapters of the same story</h2>
+      <h2>
+        {entry.title.name} · {part?.name ?? "New chapter"}
+      </h2>
       <p className="muted">
-        Create a season or part, then keep its score, progress and feelings in
-        its own viewing history.
+        {part
+          ? `กำลังแก้ไขเฉพาะ ${part.name} ภาพปกและข้อมูลที่บันทึกจะไม่เปลี่ยนภาคอื่นหรือเรื่องรวม`
+          : "เพิ่มซีซั่น / ภาคใหม่ พร้อมภาพปกและข้อมูลของภาคนี้โดยเฉพาะ"}
       </p>
       <label htmlFor="part-selection">Season / part</label>
       <select
@@ -40,7 +44,12 @@ export function InstallmentManager({
           </option>
         ))}
       </select>
-      <form key={selected} action={action} className="editorForm">
+      <form
+        key={selected}
+        action={action}
+        className="editorForm"
+        aria-label={part ? `แก้ไขภาค ${part.name}` : "เพิ่มซีซั่น / ภาค"}
+      >
         <input type="hidden" name="titleId" value={entry.title.id} />
         <input type="hidden" name="installmentId" value={part?.id ?? ""} />
         <div className="formGrid">
@@ -78,8 +87,13 @@ export function InstallmentManager({
                 part?.totalEpisodes ?? "",
                 "number",
               ],
-              ["coverUrl", "URL ภาพปก", part?.coverUrl ?? "", "url"],
-              ["backdropUrl", "URL ภาพพื้นหลัง", part?.backdropUrl ?? "", "url"],
+              ["coverUrl", "URL ภาพปกของภาคนี้", part?.coverUrl ?? "", "text"],
+              [
+                "backdropUrl",
+                "URL ภาพพื้นหลังของภาคนี้",
+                part?.backdropUrl ?? "",
+                "text",
+              ],
             ] as const
           ).map(([name, label, value, type]) => (
             <div className="field" key={name}>
@@ -88,6 +102,16 @@ export function InstallmentManager({
                 id={`part-${name}`}
                 name={name}
                 type={type}
+                inputMode={
+                  name === "coverUrl" || name === "backdropUrl"
+                    ? "url"
+                    : undefined
+                }
+                maxLength={
+                  name === "coverUrl" || name === "backdropUrl"
+                    ? 2048
+                    : undefined
+                }
                 defaultValue={value}
                 required={name === "name" || name === "position"}
                 min={
@@ -125,6 +149,12 @@ export function InstallmentManager({
           <button className="button" disabled={pending}>
             {pending ? "กำลังบันทึก…" : "บันทึกซีซัน / ภาค"}
           </button>
+          <Link
+            className="quietLink"
+            href={`/titles/${entry.title.id}?part=${part?.id ?? "overall"}`}
+          >
+            {part ? "กลับไปดูภาคนี้" : "กลับไปดูเรื่องรวม"}
+          </Link>
         </div>
       </form>
     </section>
