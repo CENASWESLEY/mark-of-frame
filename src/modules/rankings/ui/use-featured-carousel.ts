@@ -11,7 +11,7 @@ const motionSnapshot = () =>
 const serverMotionSnapshot = () => true;
 type Selection = { current: string | null; previous: string | null };
 
-export function useFeaturedCarousel(ids: readonly string[]) {
+export function useFeaturedCarousel(ids: readonly string[], suspended = false) {
   const [selection, setSelection] = useState<Selection>({
     current: null,
     previous: null,
@@ -27,7 +27,8 @@ export function useFeaturedCarousel(ids: readonly string[]) {
     ? selection.current
     : (ids[0] ?? null);
   useEffect(() => {
-    if (paused || focused || reducedMotion || ids.length < 2) return;
+    if (paused || focused || suspended || reducedMotion || ids.length < 2)
+      return;
     const timer = window.setInterval(() => {
       if (document.hidden) return;
       setSelection((last) => {
@@ -39,7 +40,7 @@ export function useFeaturedCarousel(ids: readonly string[]) {
       });
     }, 5000);
     return () => window.clearInterval(timer);
-  }, [ids, paused, focused, reducedMotion]);
+  }, [ids, paused, focused, suspended, reducedMotion]);
   function select(id: string) {
     if (id !== currentId) setSelection({ previous: currentId, current: id });
   }

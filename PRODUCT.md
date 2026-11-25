@@ -72,3 +72,7 @@ The user wants this project available in their ChatGPT Sites library, using JSON
 - Every review box offers its own edit action in a modal dialog; older reviews remain editable. A separate button opens a new memory. Review forms are never permanently expanded on the detail page.
 - Home wheel/touch scrolling must reach the document from artwork and reading regions. A compact showcase may scroll internally on constrained screens, but its edges must allow normal document scroll chaining.
 - JSON import can explicitly refresh title and season metadata: artwork, native names, release years, synopsis, genres, country/language, duration and episode totals. It preserves existing personal scores, viewing dates, feelings, identities and manual viewing counts. Conflicting episode limits reject the entire import atomically.
+
+## Confirmed revision — 25 November 2026
+
+- The All-Time Ten has a full-list modal for the selected category, showing up to ten whole-story rankings with complete title names, artwork, scores, ranks and viewing counts. Each entry opens its overall story details. The modal scrolls on smaller screens, closes with Escape or its close button, and suspends the background slideshow without changing the user's playback preference.

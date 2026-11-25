@@ -9,6 +9,7 @@ import {
   Pause,
   Play,
   Star,
+  Expand,
 } from "lucide-react";
 import {
   categories,
@@ -28,6 +29,7 @@ import { formatScore } from "../domain/score";
 import { useFeaturedCarousel } from "./use-featured-carousel";
 import { storyViewings } from "@/modules/catalog/domain/series";
 import styles from "./hall-of-fame.module.css";
+import { TopTenDialog } from "./top-ten-dialog";
 
 export function HallOfFame({ entries }: { entries: ArchiveEntry[] }) {
   const heroRef = useRef<HTMLElement>(null);
@@ -57,6 +59,7 @@ export function HallOfFame({ entries }: { entries: ArchiveEntry[] }) {
       "film",
   );
   const [view, setView] = useState<CollectionView>("grid");
+  const [topTenOpen, setTopTenOpen] = useState(false);
   const ranked = useMemo(
     () => rankEntries(entries, category),
     [entries, category],
@@ -65,7 +68,7 @@ export function HallOfFame({ entries }: { entries: ArchiveEntry[] }) {
     () => ranked.slice(0, 10).map((entry) => entry.title.id),
     [ranked],
   );
-  const carousel = useFeaturedCarousel(ids);
+  const carousel = useFeaturedCarousel(ids, topTenOpen);
   const selected =
     ranked.find((entry) => entry.title.id === carousel.currentId) ?? ranked[0];
   const previous = entries.find(
@@ -313,7 +316,20 @@ export function HallOfFame({ entries }: { entries: ArchiveEntry[] }) {
               viewing, with every category standing on its own.
             </p>
           </div>
-          <ViewSwitch value={view} onChange={setView} />
+          <div className={styles.collectionActions}>
+            {ranked.length > 0 && (
+              <button
+                className="button"
+                type="button"
+                aria-haspopup="dialog"
+                onClick={() => setTopTenOpen(true)}
+              >
+                <Expand size={17} aria-hidden="true" />
+                View full Top 10
+              </button>
+            )}
+            <ViewSwitch value={view} onChange={setView} />
+          </div>
         </div>
         <div
           className={styles.categories}
@@ -357,6 +373,12 @@ export function HallOfFame({ entries }: { entries: ArchiveEntry[] }) {
           </p>
         )}
       </section>
+      <TopTenDialog
+        open={topTenOpen}
+        onClose={() => setTopTenOpen(false)}
+        categoryName={categoryEnglishLabel(category)}
+        entries={ranked.slice(0, 10)}
+      />
     </div>
   );
 }
