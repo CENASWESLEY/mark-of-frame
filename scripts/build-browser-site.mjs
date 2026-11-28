@@ -6,6 +6,8 @@ const root = process.cwd();
 await build({
   configFile: false,
   root,
+  // Relative assets let the same static build work at / and /mark-of-frame/.
+  base: "./",
   publicDir: resolve(root, "public"),
   resolve: {
     alias: [

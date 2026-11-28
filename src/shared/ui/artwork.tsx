@@ -1,8 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 import { Film } from "lucide-react";
+import { artworkSource } from "@/shared/lib/artwork-source";
 import styles from "./artwork.module.css";
+
+const ArtworkBasePath = createContext("/");
+
+export function ArtworkBasePathProvider({
+  basePath,
+  children,
+}: {
+  basePath: string;
+  children: ReactNode;
+}) {
+  return (
+    <ArtworkBasePath.Provider value={basePath}>
+      {children}
+    </ArtworkBasePath.Provider>
+  );
+}
 
 export function Artwork({
   src,
@@ -17,6 +34,7 @@ export function Artwork({
 }) {
   const [failedSource, setFailedSource] = useState<string | null>(null);
   const [wideSource, setWideSource] = useState<string | null>(null);
+  const basePath = useContext(ArtworkBasePath);
   return (
     <span
       className={`${styles.artwork} ${backdrop ? styles.backdrop : wideSource === src ? styles.wide : ""}`}
@@ -25,7 +43,7 @@ export function Artwork({
         // User-supplied cover hosts vary; a regular image avoids a server-side arbitrary-host image proxy.
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={src}
+          src={artworkSource(src, basePath)}
           alt={backdrop ? "" : `ปก ${title}`}
           loading={eager ? "eager" : "lazy"}
           onLoad={(event) => {

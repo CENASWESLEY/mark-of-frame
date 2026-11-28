@@ -41,3 +41,9 @@ Portable repair backups keep the ordinary version-2 entries and an optional revi
 Library uses pure `libraryEntries` projections with an installment identity for ranking and a separate story identity for navigation. These projections never enter persistence or the Hall. Scores remain on viewing rounds.
 
 The catalog domain owns manual viewing-count validation and a one-time legacy derivation. JSON normalization and SQLite migration 3 freeze earlier inferred counts; subsequent reviews cannot modify them. Version-2 backups remain readable and carry the extra optional metadata/count fields. A metadata-refresh import delegates to a pure catalog policy, then persists validated changes within the existing atomic browser write or SQLite transaction. The policy excludes personal fields and checks saved progress before any write.
+
+## GitHub Pages deployment
+
+The static build uses relative Vite asset URLs so one artifact supports a domain root or a project path. Browser composition provides the directory of the loaded page to `Artwork`; only stored `/images/` references receive that prefix at render time. Stored JSON, external image URLs and the local Next.js target retain their existing paths. CSS/font and HTML entrypoint URLs are rewritten by Vite.
+
+`.github/workflows/pages.yml` checks and builds the static target, verifies compiled JavaScript/CSS/fonts/artwork over HTTP, and uploads only `dist/` to Pages. `scripts/check-static-site.mjs <url>` also checks the live deployment, rejecting uncompiled TypeScript, wrong MIME types and assets escaping the hosting path. Pages must use GitHub Actions as its publishing source. No personal archive is bundled or uploaded by this workflow.

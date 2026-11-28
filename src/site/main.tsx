@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { SiteApp } from "./app";
 import { getBrowserArchive } from "./runtime";
 import { archiveStorageKey } from "./archive-store";
+import { ArtworkBasePathProvider } from "@/shared/ui/artwork";
 import "@/app/globals.css";
 import "./site.css";
 
@@ -59,6 +60,10 @@ const root = document.getElementById("root");
 if (!root) throw new Error("Missing Site root.");
 createRoot(root).render(
   <ArchiveBoundary>
-    <SiteApp />
+    <ArtworkBasePathProvider
+      basePath={new URL(".", window.location.href).pathname}
+    >
+      <SiteApp />
+    </ArtworkBasePathProvider>
   </ArchiveBoundary>,
 );

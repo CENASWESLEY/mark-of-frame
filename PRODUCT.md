@@ -76,3 +76,7 @@ The user wants this project available in their ChatGPT Sites library, using JSON
 ## Confirmed revision — 25 November 2026
 
 - The All-Time Ten has a full-list modal for the selected category, showing up to ten whole-story rankings with complete title names, artwork, scores, ranks and viewing counts. Each entry opens its overall story details. The modal scrolls on smaller screens, closes with Escape or its close button, and suspends the background slideshow without changing the user's playback preference.
+
+## Confirmed revision — 28 November 2026
+
+- The existing static application also runs on GitHub Pages under `/mark-of-frame/`. GitHub Actions builds and publishes only `dist/`, never the raw TypeScript source. Relative build assets and a browser artwork prefix support both project subpaths and root-hosted Sites. Hash routes and JSON storage remain unchanged; Pages does not add authentication or synchronization.

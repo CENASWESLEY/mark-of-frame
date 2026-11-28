@@ -98,6 +98,20 @@ pnpm exec vite preview --host 127.0.0.1
 
 ไฟล์ static อยู่ใน `dist/` ส่วน `.openai/hosting.json` ระบุโปรเจกต์ Sites เดิม การ build ไม่ได้ publish เว็บโดยอัตโนมัติ
 
+### GitHub Pages
+
+เปิดเว็บได้ที่ [cenaswesley.github.io/mark-of-frame/](https://cenaswesley.github.io/mark-of-frame/) ใน repository ให้ตั้ง **Settings → Pages → Source → GitHub Actions** โดย workflow ใน `.github/workflows/pages.yml` จะตรวจโค้ด build static application และเผยแพร่เฉพาะ `dist/` เมื่อ push เข้า `main` หรือสั่งรันเองจาก Actions
+
+อย่าเลือกเผยแพร่จากราก branch `main` โดยตรง เพราะ `index.html` ในซอร์สยังอ้างไฟล์ TypeScript ที่ต้องผ่าน Vite ก่อน ตัว build ใช้ relative asset URLs และจัดพาธปกให้รองรับ `/mark-of-frame/` เส้นทางภายในใช้ `#/library`, `#/settings` และ hash routes อื่น ๆ
+
+ตรวจไฟล์ที่เผยแพร่จริงได้ด้วย:
+
+```sh
+node scripts/check-static-site.mjs https://cenaswesley.github.io/mark-of-frame/
+```
+
+GitHub Pages ใช้ JSON ในเบราว์เซอร์เช่นเดียวกับเวอร์ชัน Sites แต่เป็นคนละ origin จึงต้อง import backup ของตนเองเมื่อต้องการย้ายคลัง ไม่มีการนำข้อมูลส่วนตัวขึ้นไปพร้อม workflow
+
 ### Sample collection
 
 ```sh
